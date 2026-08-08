@@ -2,233 +2,136 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>US Momentum Scanner</title>
-
 <style>
 *{box-sizing:border-box}
-body{
-  margin:0;
-  background:#f4f6f8;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  color:#111827;
-}
-.header{
-  background:#111827;
-  color:white;
-  padding:20px 18px;
-}
-.header h1{margin:0;font-size:23px}
-.header p{margin:6px 0 0;color:#aeb7c4;font-size:13px}
-
-.container{padding:15px;max-width:700px;margin:auto}
-
-.status{
-  background:white;
-  border-radius:14px;
-  padding:15px;
-  margin-bottom:14px;
-  box-shadow:0 2px 8px #00000010;
-}
-.status b{font-size:14px}
-.live{
-  display:inline-block;
-  background:#dcfce7;
-  color:#15803d;
-  padding:5px 9px;
-  border-radius:20px;
-  font-size:12px;
-  float:right;
-}
-
-.card{
-  background:white;
-  border-radius:16px;
-  padding:17px;
-  margin-bottom:12px;
-  box-shadow:0 2px 9px #00000012;
-}
-.rank{
-  font-size:13px;
-  color:#6b7280;
-}
-.symbol{
-  font-size:25px;
-  font-weight:800;
-  margin-top:4px;
-}
-.name{font-size:13px;color:#6b7280}
-
-.row{
-  display:flex;
-  justify-content:space-between;
-  margin-top:15px;
-}
+body{margin:0;background:#f4f6f8;font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:#111827}
+header{background:#111827;color:white;padding:22px 18px}
+header h1{margin:0;font-size:24px}
+header p{margin:7px 0 0;color:#aeb7c4}
+main{padding:15px;max-width:700px;margin:auto}
+.status,.card{background:white;border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 2px 9px #00000012}
+.status{font-size:18px;font-weight:700}
+.live{float:right;background:#dcfce7;color:#15803d;padding:6px 10px;border-radius:20px;font-size:12px}
+.rank{color:#6b7280;font-size:13px}
+.symbol{font-size:28px;font-weight:800;margin-top:4px}
+.name{color:#6b7280;font-size:13px;margin-top:4px}
+.row{display:flex;justify-content:space-between;margin-top:15px}
 .label{font-size:12px;color:#6b7280}
 .value{font-size:17px;font-weight:700;margin-top:3px}
-
-.green{color:#16a34a}
-.red{color:#dc2626}
-.orange{color:#ea580c}
-
-.score{
-  margin-top:16px;
-  background:#f3f4f6;
-  border-radius:10px;
-  padding:10px;
-}
-.bar{
-  height:8px;
-  background:#e5e7eb;
-  border-radius:10px;
-  overflow:hidden;
-  margin-top:7px;
-}
-.bar div{
-  height:100%;
-  background:#16a34a;
-  width:92%;
-}
-
-.badges{
-  margin-top:13px;
-}
-.badge{
-  display:inline-block;
-  padding:6px 8px;
-  margin:3px;
-  border-radius:7px;
-  background:#eff6ff;
-  color:#2563eb;
-  font-size:11px;
-}
-
-.footer{
-  text-align:center;
-  color:#9ca3af;
-  font-size:11px;
-  padding:20px;
-}
+.green{color:#16a34a}.red{color:#dc2626}.orange{color:#ea580c}
+.score{margin-top:16px;background:#f3f4f6;border-radius:10px;padding:10px}
+.bar{height:8px;background:#e5e7eb;border-radius:10px;overflow:hidden;margin-top:7px}
+.bar div{height:100%;background:#16a34a}
+.badges{margin-top:13px}
+.badge{display:inline-block;background:#eff6ff;color:#2563eb;padding:6px 8px;margin:3px;border-radius:7px;font-size:11px}
+footer{text-align:center;color:#9ca3af;font-size:11px;padding:20px}
 </style>
 </head>
 
 <body>
+<header>
+<h1>🇺🇸 US Momentum Scanner</h1>
+<p>미국 급등주 실시간 스캐너</p>
+</header>
 
-<div class="header">
-  <h1>🇺🇸 US Momentum Scanner</h1>
-  <p>미국 급등주 실시간 스캐너</p>
+<main>
+<div class="status">
+오늘의 대장주 후보
+<span class="live">LIVE</span>
 </div>
 
-<div class="container">
+<div id="list">데이터 불러오는 중...</div>
+</main>
 
-  <div class="status">
-    <b>오늘의 대장주 후보</b>
-    <span class="live">테스트 모드</span>
-  </div>
+<footer>US Momentum Scanner</footer>
 
-  <div class="card">
-    <div class="rank">🥇 1위 · 대장주 후보</div>
-    <div class="symbol">AQB</div>
-    <div class="name">AquaBounty Technologies</div>
+<script>
+async function load(){
+  try{
+    const r=await fetch("data.json?"+Date.now());
+    const d=await r.json();
+    const stocks=d.stocks||[];
+    stocks.sort((a,b)=>(b.score||0)-(a.score||0));
 
-    <div class="row">
-      <div>
-        <div class="label">현재가</div>
-        <div class="value">$4.52</div>
-      </div>
-      <div>
-        <div class="label">등락률</div>
-        <div class="value green">+18.4%</div>
-      </div>
-      <div>
-        <div class="label">거래량</div>
-        <div class="value">+385%</div>
-      </div>
-    </div>
+    let html="";
 
-    <div class="score">
-      <div class="label">대장주 점수</div>
-      <div class="value">92 / 100</div>
-      <div class="bar"><div></div></div>
-    </div>
+    stocks.slice(0,10).forEach((s,i)=>{
+      const price=Number(s.price||0);
+      const change=Number(s.change||0);
+      const score=Math.min(100,Number(s.score||0));
 
-    <div class="row">
-      <div>
-        <div class="label">진입가</div>
-        <div class="value green">$4.45~4.55</div>
-      </div>
-      <div>
-        <div class="label">손절가</div>
-        <div class="value red">$4.28</div>
-      </div>
-    </div>
+      const entryLow=(price*0.985).toFixed(2);
+      const entryHigh=(price*1.005).toFixed(2);
+      const stop=(price*0.947).toFixed(2);
+      const target1=(price*1.084).toFixed(2);
+      const target2=(price*1.184).toFixed(2);
 
-    <div class="row">
-      <div>
-        <div class="label">1차 목표</div>
-        <div class="value orange">$4.90</div>
-      </div>
-      <div>
-        <div class="label">2차 목표</div>
-        <div class="value orange">$5.35</div>
-      </div>
-    </div>
+      html+=`
+      <div class="card">
+        <div class="rank">🏅 ${i+1}위 · 대장주 후보</div>
+        <div class="symbol">${s.symbol||"-"}</div>
+        <div class="name">${s.name||"미국 주식"}</div>
 
-    <div class="badges">
-      <span class="badge">거래량 폭증</span>
-      <span class="badge">갭상승</span>
-      <span class="badge">돌파</span>
-      <span class="badge">VWAP 위</span>
-    </div>
-  </div>
+        <div class="row">
+          <div><div class="label">현재가</div>
+          <div class="value">$${price.toFixed(2)}</div></div>
 
-  <div class="card">
-    <div class="rank">🥈 2위</div>
-    <div class="symbol">TEST</div>
-    <div class="name">Scanner Candidate</div>
+          <div><div class="label">등락률</div>
+          <div class="value ${change>=0?"green":"red"}">${change>=0?"+":""}${change.toFixed(1)}%</div></div>
 
-    <div class="row">
-      <div>
-        <div class="label">현재가</div>
-        <div class="value">$2.84</div>
-      </div>
-      <div>
-        <div class="label">등락률</div>
-        <div class="value green">+15.7%</div>
-      </div>
-      <div>
-        <div class="label">점수</div>
-        <div class="value">87</div>
-      </div>
-    </div>
-  </div>
+          <div><div class="label">거래량</div>
+          <div class="value">${Number(s.volume||0).toLocaleString()}</div></div>
+        </div>
 
-  <div class="card">
-    <div class="rank">🥉 3위</div>
-    <div class="symbol">TEST2</div>
-    <div class="name">Scanner Candidate</div>
+        <div class="score">
+          <div class="label">대장주 점수</div>
+          <div class="value">${score} / 100</div>
+          <div class="bar"><div style="width:${score}%"></div></div>
+        </div>
 
-    <div class="row">
-      <div>
-        <div class="label">현재가</div>
-        <div class="value">$6.21</div>
-      </div>
-      <div>
-        <div class="label">등락률</div>
-        <div class="value green">+13.2%</div>
-      </div>
-      <div>
-        <div class="label">점수</div>
-        <div class="value">83</div>
-      </div>
-    </div>
-  </div>
+        <div class="row">
+          <div>
+            <div class="label">진입가</div>
+            <div class="value green">$${entryLow}~${entryHigh}</div>
+          </div>
+          <div>
+            <div class="label">손절가</div>
+            <div class="value red">$${stop}</div>
+          </div>
+        </div>
 
-</div>
+        <div class="row">
+          <div>
+            <div class="label">1차 목표</div>
+            <div class="value orange">$${target1}</div>
+          </div>
+          <div>
+            <div class="label">2차 목표</div>
+            <div class="value orange">$${target2}</div>
+          </div>
+        </div>
 
-<div class="footer">
-  US Momentum Scanner · 테스트 버전
-</div>
+        <div class="badges">
+          <span class="badge">거래량</span>
+          <span class="badge">상승</span>
+          <span class="badge">돌파</span>
+          <span class="badge">모멘텀</span>
+        </div>
+      </div>`;
+    });
 
+    document.getElementById("list").innerHTML=
+      html||"<div class='card'>조건에 맞는 종목이 없습니다.</div>";
+
+  }catch(e){
+    document.getElementById("list").innerHTML=
+      "<div class='card'>데이터를 불러오지 못했습니다.</div>";
+  }
+}
+load();
+setInterval(load,60000);
+</script>
 </body>
 </html>
