@@ -1,5 +1,216 @@
 {
-  "updated": "2026-08-08T03:51:49.277191+00:00",
+  "updated": "2026-08-08T04:20:01.931813+00:00",
   "mode": "LIVE",
-  "stocks": []
+  "stocks": [
+    {
+      "symbol": "PLTR",
+      "price": 172.01,
+      "change": 10.32,
+      "volume": 0,
+      "score": 70
+    },
+    {
+      "symbol": "SMCI",
+      "price": 31.13,
+      "change": 5.96,
+      "volume": 0,
+      "score": 70
+    },
+    {
+      "symbol": "SOUN",
+      "price": 8.02,
+      "change": 13.28,
+      "volume": 0,
+      "score": 70
+    },
+    {
+      "symbol": "IONQ",
+      "price": 44.43,
+      "change": 11.86,
+      "volume": 0,
+      "score": 70
+    },
+    {
+      "symbol": "RGTI",
+      "price": 17.94,
+      "change": 8.53,
+      "volume": 0,
+      "score": 70
+    },
+    {
+      "symbol": "QBTS",
+      "price": 20.76,
+      "change": 6.98,
+      "volume": 0,
+      "score": 70
+    },
+    {
+      "symbol": "BBAI",
+      "price": 3.27,
+      "change": 8.64,
+      "volume": 0,
+      "score": 70
+    },
+    {
+      "symbol": "COIN",
+      "price": 153.6,
+      "change": 5.63,
+      "volume": 0,
+      "score": 70
+    },
+    {
+      "symbol": "ASTS",
+      "price": 71.94,
+      "change": 6.8,
+      "volume": 0,
+      "score": 70
+    },
+    {
+      "symbol": "RKLB",
+      "price": 82.83,
+      "change": 9.46,
+      "volume": 0,
+      "score": 70
+    },
+    {
+      "symbol": "LUNR",
+      "price": 16.4,
+      "change": 9.85,
+      "volume": 0,
+      "score": 70
+    },
+    {
+      "symbol": "ACHR",
+      "price": 5.59,
+      "change": 6.88,
+      "volume": 0,
+      "score": 70
+    },
+    {
+      "symbol": "QUBT",
+      "price": 9.18,
+      "change": 4.62,
+      "volume": 0,
+      "score": 60
+    },
+    {
+      "symbol": "RIVN",
+      "price": 16,
+      "change": 4.03,
+      "volume": 0,
+      "score": 60
+    },
+    {
+      "symbol": "NIO",
+      "price": 4.74,
+      "change": 3.04,
+      "volume": 0,
+      "score": 60
+    },
+    {
+      "symbol": "JOBY",
+      "price": 8.64,
+      "change": 4.98,
+      "volume": 0,
+      "score": 60
+    },
+    {
+      "symbol": "AUR",
+      "price": 7.06,
+      "change": 4.13,
+      "volume": 0,
+      "score": 60
+    },
+    {
+      "symbol": "NVDA",
+      "price": 223.96,
+      "change": 2.27,
+      "volume": 0,
+      "score": 50
+    },
+    {
+      "symbol": "TSLA",
+      "price": 328.58,
+      "change": 2.83,
+      "volume": 0,
+      "score": 50
+    },
+    {
+      "symbol": "AAPL",
+      "price": 313.33,
+      "change": 0.29,
+      "volume": 0,
+      "score": 40
+    },
+    {
+      "symbol": "AI",
+      "price": 10.22,
+      "change": 3.65,
+      "volume": 0,
+      "score": 40
+    },
+    {
+      "symbol": "MSTR",
+      "price": 100.01,
+      "change": 3.26,
+      "volume": 0,
+      "score": 40
+    },
+    {
+      "symbol": "AMC",
+      "price": 2.59,
+      "change": 0.78,
+      "volume": 0,
+      "score": 40
+    },
+    {
+      "symbol": "HOOD",
+      "price": 93.29,
+      "change": 2.84,
+      "volume": 0,
+      "score": 30
+    },
+    {
+      "symbol": "LCID",
+      "price": 7.04,
+      "change": 0.86,
+      "volume": 0,
+      "score": 20
+    },
+    {
+      "symbol": "GME",
+      "price": 19.16,
+      "change": -0.36,
+      "volume": 0,
+      "score": 20
+    },
+    {
+      "symbol": "AMD",
+      "price": 483.36,
+      "change": -1.21,
+      "volume": 0,
+      "score": 0
+    },
+    {
+      "symbol": "MARA",
+      "price": 10.09,
+      "change": -5.26,
+      "volume": 0,
+      "score": 0
+    },
+    {
+      "symbol": "RIOT",
+      "price": 20.52,
+      "change": -3.25,
+      "volume": 0,
+      "score": 0
+    },
+    {
+      "symbol": "DNA",
+      "price": 7.97,
+      "change": -6.24,
+      "volume": 0,
+      "score": 0
+    }
+  ]
 }
