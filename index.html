@@ -55,6 +55,7 @@ main{padding:15px;max-width:760px;margin:auto}
 .green{color:#16a34a}
 .red{color:#dc2626}
 .orange{color:#ea580c}
+.purple{color:#7c3aed}
 .score{
  background:#f1f5f9;
  padding:15px;
@@ -72,6 +73,12 @@ main{padding:15px;max-width:760px;margin:auto}
  height:100%;
  background:#16a34a
 }
+.master-bar div{
+ background:#7c3aed
+}
+.risk-bar div{
+ background:#dc2626
+}
 .badges{margin-top:15px}
 .badge{
  display:inline-block;
@@ -82,6 +89,14 @@ main{padding:15px;max-width:760px;margin:auto}
  margin:3px;
  font-size:12px;
  font-weight:700
+}
+.master-badge{
+ background:#f3e8ff;
+ color:#7e22ce
+}
+.risk-badge{
+ background:#fee2e2;
+ color:#b91c1c
 }
 .small{
  font-size:12px;
@@ -100,7 +115,7 @@ footer{
 
 <header>
 <h1>🇺🇸 US Small Cap Momentum Scanner</h1>
-<p>미국 중소형 급등주 실시간 후보 스캐너</p>
+<p>미국 중소형 급등주 · 주포 개입 가능성 분석</p>
 </header>
 
 <main>
@@ -152,16 +167,9 @@ const cap=Number(
  0
 );
 
-// 우량 대형주 제거
 if(mega.includes(symbol)) return false;
-
-// 가격이 없는 종목 제거
 if(price<=0) return false;
-
-// 너무 비싼 종목 제거
 if(price>20) return false;
-
-// 시총 데이터가 있으면 20억 달러 이하만
 if(cap>0 && cap>2000000000) return false;
 
 return true;
@@ -169,12 +177,13 @@ return true;
 
 
 // =====================================
-// 급등주 점수 계산
+// 급등주 + 주포 개입 가능성 계산
 // =====================================
 
 stocks=stocks.map(s=>{
 
 const price=Number(s.price||0);
+
 const change=Number(
  s.change ||
  s.changePercent ||
@@ -183,6 +192,7 @@ const change=Number(
 );
 
 const volume=Number(s.volume||0);
+
 const avgVolume=Number(
  s.avgVolume ||
  s.averageVolume ||
@@ -194,8 +204,28 @@ const high=Number(s.high||0);
 const low=Number(s.low||0);
 
 let score=0;
-let tags=[];
+let masterScore=0;
+let riskScore=0;
 
+let tags=[];
+let masterTags=[];
+let riskTags=[];
+
+
+// =====================================
+// RVOL 계산
+// =====================================
+
+let ratio=0;
+
+if(avgVolume>0 && volume>0){
+ ratio=volume/avgVolume;
+}
+
+
+// =====================================
+// 기존 급등주 점수
+// =====================================
 
 // 상승률
 if(change>=20){
@@ -210,10 +240,6 @@ if(change>=20){
 
 
 // 거래량
-if(avgVolume>0){
-
-const ratio=volume/avgVolume;
-
 if(ratio>=10){
  score+=30;
  tags.push("거래량 폭증");
@@ -223,13 +249,9 @@ if(ratio>=10){
 }else if(ratio>=2){
  score+=15;
  tags.push("거래량 증가");
-}
-
 }else if(volume>0){
-
-score+=10;
-tags.push("거래량");
-
+ score+=10;
+ tags.push("거래량");
 }
 
 
@@ -245,31 +267,191 @@ if(price<1){
 }
 
 
-// 돌파
+// 고가 돌파
+const highHold=
+ high>0 && price>=high*0.97;
+
 if(high>0 && price>=high*0.98){
  score+=15;
  tags.push("고가 돌파");
 }
 
 
-// 거래량 + 상승 동시 발생
-if(change>=10 && avgVolume>0 && volume/avgVolume>=3){
+// 거래량 + 상승
+if(change>=10 && ratio>=3){
  score+=10;
  tags.push("수급 집중");
 }
 
 
-// 가격 상승 모멘텀
+// 모멘텀
 if(change>=15){
  score+=5;
  tags.push("모멘텀");
 }
 
 
-score=Math.min(100,score);
+// =====================================
+// 🔥 주포 개입 가능성 점수
+// =====================================
+
+// 1. 거래량 폭증
+if(ratio>=15){
+ masterScore+=30;
+ masterTags.push("RVOL 15배+");
+}else if(ratio>=10){
+ masterScore+=25;
+ masterTags.push("RVOL 10배+");
+}else if(ratio>=5){
+ masterScore+=20;
+ masterTags.push("RVOL 5배+");
+}else if(ratio>=2){
+ masterScore+=10;
+ masterTags.push("평균 이상 거래량");
+}
 
 
+// 2. 강한 상승
+if(change>=30){
+ masterScore+=20;
+ masterTags.push("초강력 상승");
+}else if(change>=20){
+ masterScore+=17;
+ masterTags.push("강한 상승");
+}else if(change>=10){
+ masterScore+=12;
+ masterTags.push("상승 모멘텀");
+}
+
+
+// 3. 고점 부근 유지
+if(highHold){
+ masterScore+=20;
+ masterTags.push("고점 부근 유지");
+}else if(high>0 && price>=high*0.93){
+ masterScore+=10;
+ masterTags.push("상승 추세 유지");
+}
+
+
+// 4. 거래량 + 가격 동시 폭발
+if(change>=10 && ratio>=5){
+ masterScore+=15;
+ masterTags.push("가격·거래량 동시 폭발");
+}
+
+
+// 5. 저가주 + 높은 거래량
+if(price<5 && ratio>=5){
+ masterScore+=8;
+ masterTags.push("저가주 수급 집중");
+}
+
+
+// 6. 저점 대비 강한 반등
+if(low>0){
+
+ const rebound=((price-low)/low)*100;
+
+ if(rebound>=20){
+  masterScore+=10;
+  masterTags.push("저점 강한 반등");
+ }else if(rebound>=10){
+  masterScore+=5;
+ }
+
+}
+
+
+// =====================================
+// ⚠️ 설거지 / 급락 위험 점수
+// =====================================
+
+// 고점 대비 크게 밀림
+if(high>0){
+
+ const pullback=((high-price)/high)*100;
+
+ if(pullback>=30){
+  riskScore+=35;
+  riskTags.push("고점 대비 급락");
+ }else if(pullback>=20){
+  riskScore+=25;
+  riskTags.push("고점 이탈");
+ }else if(pullback>=10){
+  riskScore+=10;
+ }
+
+}
+
+
+// 급등했지만 고점 유지 실패
+if(change>=20 && high>0 && price<high*0.90){
+ riskScore+=20;
+ riskTags.push("급등 후 매물 출회");
+}
+
+
+// 거래량 폭증 + 가격 약세
+if(ratio>=10 && high>0 && price<high*0.85){
+ riskScore+=20;
+ riskTags.push("대량 거래 후 약세");
+}
+
+
+// =====================================
+// 점수 보정
+// =====================================
+
+score=Math.min(100,Math.max(0,score));
+masterScore=Math.min(100,Math.max(0,masterScore));
+riskScore=Math.min(100,Math.max(0,riskScore));
+
+
+// 주포 개입 가능성 등급
+let masterLevel="관망";
+
+if(masterScore>=80){
+ masterLevel="🔥 매우 높음";
+}else if(masterScore>=65){
+ masterLevel="🟣 높음";
+}else if(masterScore>=45){
+ masterLevel="🟡 주목";
+}else{
+ masterLevel="⚪ 낮음";
+}
+
+
+// 설거지 위험 등급
+let riskLevel="낮음";
+
+if(riskScore>=60){
+ riskLevel="🔴 높음";
+}else if(riskScore>=35){
+ riskLevel="🟠 주의";
+}else{
+ riskLevel="🟢 낮음";
+}
+
+
+// =====================================
+// 최종 대장 점수
+// =====================================
+
+const leaderScore=Math.min(
+ 100,
+ Math.round(
+  score*0.55 +
+  masterScore*0.35 -
+  riskScore*0.20
+ )
+);
+
+
+// =====================================
 // 진입 / 손절 / 목표
+// =====================================
+
 const entryLow=price*0.985;
 const entryHigh=price*1.005;
 
@@ -278,10 +460,24 @@ const stop=price*0.947;
 const target1=price*1.084;
 const target2=price*1.184;
 
+
 return{
  ...s,
+
  score,
+ masterScore,
+ riskScore,
+ leaderScore,
+
+ masterLevel,
+ riskLevel,
+
+ ratio,
+
  tags:[...new Set(tags)],
+ masterTags:[...new Set(masterTags)],
+ riskTags:[...new Set(riskTags)],
+
  entryLow,
  entryHigh,
  stop,
@@ -293,11 +489,11 @@ return{
 
 
 // =====================================
-// 점수순 정렬
+// 오늘의 대장 점수순 정렬
 // =====================================
 
 stocks.sort((a,b)=>
- Number(b.score||0)-Number(a.score||0)
+ Number(b.leaderScore||0)-Number(a.leaderScore||0)
 );
 
 
@@ -310,6 +506,7 @@ let html="";
 stocks.slice(0,10).forEach((s,i)=>{
 
 const price=Number(s.price||0);
+
 const change=Number(
  s.change ||
  s.changePercent ||
@@ -318,6 +515,7 @@ const change=Number(
 );
 
 const volume=Number(s.volume||0);
+
 
 html+=`
 
@@ -335,6 +533,7 @@ ${s.symbol || "N/A"}
 ${s.name || "미국 중소형주"}
 </div>
 
+
 <div class="row">
 
 <div>
@@ -344,15 +543,15 @@ ${s.name || "미국 중소형주"}
 
 <div>
 <div class="label">등락률</div>
-<div class="value green">
+<div class="value ${change>=0?"green":"red"}">
 ${change>=0?"+":""}${change.toFixed(1)}%
 </div>
 </div>
 
 <div>
-<div class="label">거래량</div>
+<div class="label">RVOL</div>
 <div class="value">
-${volume ? volume.toLocaleString() : "-"}
+${s.ratio>0 ? s.ratio.toFixed(1)+"배" : "-"}
 </div>
 </div>
 
@@ -361,14 +560,44 @@ ${volume ? volume.toLocaleString() : "-"}
 
 <div class="score">
 
-<div class="label">급등주 점수</div>
+<div class="label">👑 오늘의 대장 가능성</div>
 
 <div class="value">
-${s.score} / 100
+${s.leaderScore} / 100
 </div>
 
 <div class="bar">
-<div style="width:${s.score}%"></div>
+<div style="width:${s.leaderScore}%"></div>
+</div>
+
+</div>
+
+
+<div class="score">
+
+<div class="label">🔥 주포 개입 가능성</div>
+
+<div class="value purple">
+${s.masterScore}% · ${s.masterLevel}
+</div>
+
+<div class="bar master-bar">
+<div style="width:${s.masterScore}%"></div>
+</div>
+
+</div>
+
+
+<div class="score">
+
+<div class="label">⚠️ 설거지 위험</div>
+
+<div class="value ${s.riskScore>=35?"red":"green"}">
+${s.riskScore}% · ${s.riskLevel}
+</div>
+
+<div class="bar risk-bar">
+<div style="width:${s.riskScore}%"></div>
 </div>
 
 </div>
@@ -418,10 +647,19 @@ ${s.tags.map(t=>
 `<span class="badge">${t}</span>`
 ).join("")}
 
+${s.masterTags.map(t=>
+`<span class="badge master-badge">🔥 ${t}</span>`
+).join("")}
+
+${s.riskTags.map(t=>
+`<span class="badge risk-badge">⚠️ ${t}</span>`
+).join("")}
+
 </div>
 
+
 <div class="small">
-※ 급등 가능성을 점수화한 참고용 스캐너이며 매매 신호가 아닙니다.
+※ 주포 개입 가능성은 가격·거래량·고점 유지 패턴을 기반으로 계산한 추정 지표입니다. 실제 특정 세력의 존재를 확인하는 기능은 아닙니다.
 </div>
 
 </div>
@@ -432,27 +670,34 @@ ${s.tags.map(t=>
 
 
 if(!html){
+
 html=`
 <div class="card">
 현재 조건에 맞는 급등주 후보가 없습니다.
 </div>
 `;
+
 }
 
+
 document.getElementById("list").innerHTML=html;
+
 
 }catch(e){
 
 document.getElementById("list").innerHTML=`
+
 <div class="card">
 데이터를 불러오지 못했습니다.<br><br>
 data.json 또는 스캐너 업데이트를 확인하세요.
 </div>
+
 `;
 
 }
 
 }
+
 
 load();
 setInterval(load,60000);
