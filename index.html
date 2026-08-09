@@ -2,959 +2,799 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>미국 급등주 스캐너</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>US Small Cap Momentum Scanner</title>
 
 <style>
-*{
-  box-sizing:border-box;
-}
-
+*{box-sizing:border-box}
 body{
-  margin:0;
-  background:#f4f6fa;
-  color:#1e293b;
-  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+ margin:0;
+ background:#f3f5f8;
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+ color:#111827
+}
+header{
+ background:#101827;
+ color:white;
+ padding:22px 18px
+}
+header h1{margin:0;font-size:25px}
+header p{margin:7px 0 0;color:#aeb7c7}
+main{padding:15px;max-width:760px;margin:auto}
+.status,.card{
+ background:white;
+ border-radius:22px;
+ padding:20px;
+ margin-bottom:15px;
+ box-shadow:0 5px 20px #0000000d
+}
+.status{
+ font-size:19px;
+ font-weight:800
+}
+.live{
+ float:right;
+ background:#dcfce7;
+ color:#16803c;
+ padding:8px 13px;
+ border-radius:20px;
+ font-size:13px
+}
+.card{border:1px solid #edf0f4}
+.rank{color:#64748b;font-weight:800;font-size:14px}
+.symbol{font-size:34px;font-weight:900;margin-top:5px}
+.name{color:#64748b;margin-bottom:18px}
+.row{
+ display:flex;
+ justify-content:space-between;
+ gap:10px;
+ margin:13px 0
+}
+.label{font-size:12px;color:#64748b}
+.value{font-size:19px;font-weight:800;margin-top:3px}
+.green{color:#16a34a}
+.red{color:#dc2626}
+.orange{color:#ea580c}
+.purple{color:#7c3aed}
+
+.score{
+ background:#f1f5f9;
+ padding:15px;
+ border-radius:16px;
+ margin:18px 0
 }
 
-.container{
-  width:100%;
-  max-width:700px;
-  margin:0 auto;
-  padding:20px 14px 40px;
-}
-
-.card{
-  background:#fff;
-  border-radius:30px;
-  padding:30px;
-  box-shadow:0 12px 40px rgba(0,0,0,.08);
-}
-
-.rank{
-  font-size:22px;
-  color:#64748b;
-  font-weight:700;
-  margin-bottom:15px;
-}
-
-.ticker{
-  font-size:54px;
-  font-weight:900;
-  letter-spacing:-2px;
-}
-
-.name{
-  font-size:23px;
-  color:#64748b;
-  margin-top:4px;
-  margin-bottom:30px;
-}
-
-.top-info{
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr;
-  gap:15px;
-  margin-bottom:22px;
-}
-
-.label{
-  color:#64748b;
-  font-size:17px;
-  font-weight:700;
-  margin-bottom:6px;
-}
-
-.value{
-  font-size:25px;
-  font-weight:900;
-}
-
-.up{
-  color:#218653;
-}
-
-.red{
-  color:#c93d35;
-}
-
-.orange{
-  color:#c95a16;
-}
-
-.purple{
-  color:#6547c5;
-}
-
-.green{
-  color:#27834d;
-}
-
-.score-box{
-  background:#eef1f5;
-  border-radius:28px;
-  padding:26px 30px;
-  margin:18px 0;
-}
-
-.score-title{
-  font-size:22px;
-  font-weight:700;
-  color:#64748b;
-  margin-bottom:8px;
-}
-
-.score-value{
-  font-size:40px;
-  font-weight:900;
-  margin-bottom:15px;
+.pullback-box{
+ background:#fff7ed;
+ border:1px solid #fed7aa;
+ padding:15px;
+ border-radius:16px;
+ margin:18px 0
 }
 
 .bar{
-  width:100%;
-  height:20px;
-  background:#d8dee8;
-  border-radius:20px;
-  overflow:hidden;
+ height:9px;
+ background:#e2e8f0;
+ border-radius:10px;
+ overflow:hidden;
+ margin-top:8px
+}
+.bar div{
+ height:100%;
+ background:#16a34a
+}
+.master-bar div{
+ background:#7c3aed
+}
+.risk-bar div{
+ background:#dc2626
 }
 
-.bar-fill{
-  height:100%;
-  border-radius:20px;
-  background:#218653;
+.badges{margin-top:15px}
+.badge{
+ display:inline-block;
+ background:#eff6ff;
+ color:#2563eb;
+ padding:8px 11px;
+ border-radius:12px;
+ margin:3px;
+ font-size:12px;
+ font-weight:700
+}
+.master-badge{
+ background:#f3e8ff;
+ color:#7e22ce
+}
+.risk-badge{
+ background:#fee2e2;
+ color:#b91c1c
+}
+.pullback-badge{
+ background:#fff7ed;
+ color:#c2410c
 }
 
-.bar-purple{
-  background:#6547c5;
+.small{
+ font-size:12px;
+ color:#64748b;
+ margin-top:12px
 }
-
-.bar-red{
-  background:#d4453f;
+footer{
+ text-align:center;
+ color:#94a3b8;
+ padding:20px
 }
-
-/* 🔥 자동 눌림목 */
-.pullback-box{
-  background:#fff8ef;
-  border:2px solid #f1d1a4;
-  border-radius:28px;
-  padding:25px 30px;
-  margin:20px 0 26px;
-}
-
-.pullback-title{
-  color:#64748b;
-  font-size:22px;
-  font-weight:800;
-  margin-bottom:10px;
-}
-
-.pullback-range{
-  color:#d95c00;
-  font-size:34px;
-  font-weight:900;
-  margin-bottom:10px;
-}
-
-.pullback-desc{
-  color:#64748b;
-  font-size:17px;
-  font-weight:600;
-}
-
-.trade-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:25px 35px;
-  margin-top:25px;
-}
-
-.trade-item .label{
-  font-size:19px;
-}
-
-.trade-item .price{
-  font-size:30px;
-  font-weight:900;
-}
-
-.status{
-  display:inline-block;
-  padding:12px 20px;
-  border-radius:18px;
-  background:#e9eef6;
-  color:#4167a5;
-  font-size:19px;
-  font-weight:800;
-  margin-top:30px;
-}
-
-.note{
-  margin-top:25px;
-  color:#64748b;
-  font-size:15px;
-  line-height:1.6;
-  font-weight:600;
-}
-
-.empty{
-  text-align:center;
-  padding:80px 20px;
-  color:#64748b;
-  font-size:22px;
-}
-
-@media(max-width:480px){
-
-  .container{
-    padding:10px 8px 30px;
-  }
-
-  .card{
-    padding:24px 18px;
-    border-radius:25px;
-  }
-
-  .ticker{
-    font-size:48px;
-  }
-
-  .top-info{
-    gap:10px;
-  }
-
-  .value{
-    font-size:21px;
-  }
-
-  .score-box,
-  .pullback-box{
-    padding:22px;
-  }
-
-  .score-value{
-    font-size:35px;
-  }
-
-  .pullback-range{
-    font-size:28px;
-  }
-
-  .trade-grid{
-    gap:22px;
-  }
-
-  .trade-item .price{
-    font-size:26px;
-  }
-}
-
 </style>
 </head>
 
 <body>
 
-<div class="container" id="app">
-  <div class="empty">데이터 불러오는 중...</div>
+<header>
+<h1>🇺🇸 US Small Cap Momentum Scanner</h1>
+<p>미국 중소형 급등주 · 주포 개입 가능성 분석</p>
+</header>
+
+<main>
+
+<div class="status">
+오늘의 급등주 후보
+<span class="live">LIVE</span>
 </div>
+
+<div id="list">데이터 불러오는 중...</div>
+
+</main>
+
+<footer>
+US Small Cap Momentum Scanner
+</footer>
 
 <script>
 
-/* =====================================================
-   데이터 불러오기
-===================================================== */
+async function load(){
 
-async function loadData(){
+try{
 
-  try{
+const r=await fetch("data.json?t="+Date.now());
+const d=await r.json();
 
-    const response = await fetch("data.json?ts=" + Date.now());
+let stocks=d.stocks || [];
 
-    if(!response.ok){
-      throw new Error("data.json을 불러올 수 없습니다.");
-    }
 
-    const json = await response.json();
+// =====================================
+// 우량주 / 대형주 제거
+// =====================================
 
-    /*
-      data.json이 배열이든
-      {stocks:[...]} 구조든 둘 다 처리
-    */
+const mega=[
+"AAPL","MSFT","NVDA","AMZN","GOOGL","GOOG",
+"META","TSLA","AVGO","BRK.A","BRK.B",
+"JPM","V","MA","WMT","LLY","XOM","JNJ",
+"ORCL","COST","NFLX","PLTR"
+];
 
-    let stocks = Array.isArray(json)
-      ? json
-      : (json.stocks || json.data || []);
+stocks=stocks.filter(s=>{
 
-    if(!stocks.length){
-      throw new Error("종목 데이터가 없습니다.");
-    }
+const symbol=String(s.symbol||"").toUpperCase();
+const price=Number(s.price||0);
+const cap=Number(
+ s.marketCap ||
+ s.market_cap ||
+ s.marketcap ||
+ 0
+);
 
-    renderStock(stocks[0]);
+if(mega.includes(symbol)) return false;
+if(price<=0) return false;
+if(price>20) return false;
+if(cap>0 && cap>2000000000) return false;
 
-  }catch(error){
+return true;
+});
 
-    console.error(error);
 
-    document.getElementById("app").innerHTML = `
-      <div class="empty">
-        데이터 불러오기 실패<br><br>
-        data.json 파일을 확인하세요.
-      </div>
-    `;
-  }
+// =====================================
+// 급등주 + 주포 개입 가능성 계산
+// =====================================
+
+stocks=stocks.map(s=>{
+
+const price=Number(s.price||0);
+
+const change=Number(
+ s.change ||
+ s.changePercent ||
+ s.change_pct ||
+ 0
+);
+
+const volume=Number(s.volume||0);
+
+const avgVolume=Number(
+ s.avgVolume ||
+ s.averageVolume ||
+ s.avg_volume ||
+ 0
+);
+
+const high=Number(s.high||0);
+const low=Number(s.low||0);
+
+let score=0;
+let masterScore=0;
+let riskScore=0;
+
+let tags=[];
+let masterTags=[];
+let riskTags=[];
+
+
+// =====================================
+// RVOL 계산
+// =====================================
+
+let ratio=0;
+
+if(avgVolume>0 && volume>0){
+ ratio=volume/avgVolume;
 }
 
 
-/* =====================================================
-   숫자 변환
-===================================================== */
+// =====================================
+// 기존 급등주 점수
+// =====================================
 
-function num(v){
-
-  if(v === undefined || v === null || v === ""){
-    return 0;
-  }
-
-  if(typeof v === "number"){
-    return v;
-  }
-
-  return Number(
-    String(v)
-      .replace(/[$,%]/g,"")
-      .replace(/,/g,"")
-  ) || 0;
+// 상승률
+if(change>=20){
+ score+=25;
+ tags.push("급등");
+}else if(change>=10){
+ score+=20;
+ tags.push("상승");
+}else if(change>=5){
+ score+=12;
 }
 
 
-/* =====================================================
-   가격 표시
-===================================================== */
-
-function price(v){
-
-  const n = num(v);
-
-  if(n <= 0){
-    return "-";
-  }
-
-  return "$" + n.toFixed(2);
+// 거래량
+if(ratio>=10){
+ score+=30;
+ tags.push("거래량 폭증");
+}else if(ratio>=5){
+ score+=25;
+ tags.push("거래량 급증");
+}else if(ratio>=2){
+ score+=15;
+ tags.push("거래량 증가");
+}else if(volume>0){
+ score+=10;
+ tags.push("거래량");
 }
 
 
-/* =====================================================
-   오늘의 대장 가능성
-===================================================== */
-
-function calculateLeader(stock){
-
-  let score = 0;
-
-  const change = num(
-    stock.change ??
-    stock.changePct ??
-    stock.pctChange
-  );
-
-  const rvol = num(
-    stock.rvol ??
-    stock.relativeVolume ??
-    stock.volumeRatio
-  );
-
-  const volume = num(
-    stock.volume ??
-    stock.vol
-  );
-
-  const high = num(
-    stock.high ??
-    stock.dayHigh
-  );
-
-  const priceNow = num(
-    stock.price ??
-    stock.currentPrice ??
-    stock.close
-  );
-
-  if(change >= 5) score += 15;
-  if(change >= 10) score += 15;
-  if(change >= 20) score += 15;
-  if(change >= 50) score += 10;
-
-  if(rvol >= 2) score += 10;
-  if(rvol >= 5) score += 10;
-  if(rvol >= 10) score += 10;
-
-  if(volume >= 100000) score += 5;
-
-  if(high > 0 && priceNow > 0){
-
-    const highPosition = priceNow / high;
-
-    if(highPosition >= 0.95){
-      score += 10;
-    }
-
-    if(highPosition >= 0.98){
-      score += 5;
-    }
-  }
-
-  return Math.min(100, Math.round(score));
+// 저가주 가점
+if(price<1){
+ score+=10;
+ tags.push("$1 이하");
+}else if(price<3){
+ score+=7;
+ tags.push("저가주");
+}else if(price<10){
+ score+=4;
 }
 
 
-/* =====================================================
-   🔥 주포 개입 가능성
-===================================================== */
+// 고가 돌파
+const highHold=
+ high>0 && price>=high*0.97;
 
-function calculateMainPlayer(stock){
-
-  let score = 0;
-
-  const change = num(
-    stock.change ??
-    stock.changePct ??
-    stock.pctChange
-  );
-
-  const rvol = num(
-    stock.rvol ??
-    stock.relativeVolume ??
-    stock.volumeRatio
-  );
-
-  const high = num(
-    stock.high ??
-    stock.dayHigh
-  );
-
-  const priceNow = num(
-    stock.price ??
-    stock.currentPrice ??
-    stock.close
-  );
-
-  const low = num(
-    stock.low ??
-    stock.dayLow
-  );
-
-  const open = num(
-    stock.open ??
-    stock.openPrice
-  );
-
-  /* 급등 */
-
-  if(change >= 10) score += 15;
-  if(change >= 20) score += 15;
-  if(change >= 50) score += 10;
-
-  /* 거래량 폭증 */
-
-  if(rvol >= 3) score += 15;
-  if(rvol >= 5) score += 15;
-  if(rvol >= 10) score += 10;
-
-  /* 고점 근처 유지 */
-
-  if(high > 0 && priceNow > 0){
-
-    const highPosition = priceNow / high;
-
-    if(highPosition >= 0.95){
-      score += 15;
-    }
-
-    if(highPosition >= 0.98){
-      score += 5;
-    }
-  }
-
-  /* 양봉 */
-
-  if(open > 0 && priceNow > open){
-    score += 5;
-  }
-
-  /* 저점에서 강하게 반등 */
-
-  if(low > 0 && high > low && priceNow > 0){
-
-    const rangePosition =
-      (priceNow - low) / (high - low);
-
-    if(rangePosition >= 0.75){
-      score += 5;
-    }
-  }
-
-  return Math.min(100, Math.round(score));
+if(high>0 && price>=high*0.98){
+ score+=15;
+ tags.push("고가 돌파");
 }
 
 
-/* =====================================================
-   ⚠️ 설거지 위험
-===================================================== */
-
-function calculateDumpRisk(stock){
-
-  let risk = 0;
-
-  const high = num(
-    stock.high ??
-    stock.dayHigh
-  );
-
-  const priceNow = num(
-    stock.price ??
-    stock.currentPrice ??
-    stock.close
-  );
-
-  const change = num(
-    stock.change ??
-    stock.changePct ??
-    stock.pctChange
-  );
-
-  const rvol = num(
-    stock.rvol ??
-    stock.relativeVolume ??
-    stock.volumeRatio
-  );
-
-  if(high > 0 && priceNow > 0){
-
-    const dropFromHigh =
-      ((high - priceNow) / high) * 100;
-
-    if(dropFromHigh >= 5) risk += 20;
-    if(dropFromHigh >= 10) risk += 20;
-    if(dropFromHigh >= 20) risk += 25;
-    if(dropFromHigh >= 30) risk += 20;
-  }
-
-  /* 급등 후 거래량 부족 */
-
-  if(change >= 30 && rvol < 2){
-    risk += 15;
-  }
-
-  if(change >= 50 && rvol < 3){
-    risk += 15;
-  }
-
-  return Math.min(100, Math.round(risk));
+// 거래량 + 상승
+if(change>=10 && ratio>=3){
+ score+=10;
+ tags.push("수급 집중");
 }
 
 
-/* =====================================================
-   🔥 자동 눌림목 계산
-===================================================== */
-
-function calculatePullback(stock){
-
-  const current = num(
-    stock.price ??
-    stock.currentPrice ??
-    stock.close
-  );
-
-  const high = num(
-    stock.high ??
-    stock.dayHigh ??
-    current
-  );
-
-  const low = num(
-    stock.low ??
-    stock.dayLow
-  );
-
-  const change = num(
-    stock.change ??
-    stock.changePct ??
-    stock.pctChange
-  );
-
-  let pullbackHigh;
-  let pullbackLow;
-
-  /*
-    급등폭에 따라 눌림목 깊이를 자동 조절
-
-    10% 미만 상승 → 고점 대비 2~4%
-    10~30% 상승 → 고점 대비 3~6%
-    30~50% 상승 → 고점 대비 4~8%
-    50% 이상 급등 → 고점 대비 5~12%
-  */
-
-  if(change >= 50){
-
-    pullbackHigh = high * 0.95;
-    pullbackLow = high * 0.88;
-
-  }else if(change >= 30){
-
-    pullbackHigh = high * 0.96;
-    pullbackLow = high * 0.92;
-
-  }else if(change >= 10){
-
-    pullbackHigh = high * 0.97;
-    pullbackLow = high * 0.94;
-
-  }else{
-
-    pullbackHigh = high * 0.98;
-    pullbackLow = high * 0.96;
-  }
-
-
-  /*
-    이미 눌림목 아래로 너무 내려온 경우
-    현재가 기준으로 다시 계산
-  */
-
-  if(current > 0 && current < pullbackLow){
-
-    pullbackHigh = current * 1.01;
-    pullbackLow = current * 0.97;
-  }
-
-
-  /*
-    당일 저점보다 지나치게 아래로 내려가는 것 방지
-  */
-
-  if(low > 0 && pullbackLow < low){
-
-    pullbackLow = low;
-
-  }
-
-  return {
-    low: pullbackLow,
-    high: pullbackHigh
-  };
+// 모멘텀
+if(change>=15){
+ score+=5;
+ tags.push("모멘텀");
 }
 
 
-/* =====================================================
-   점수 상태
-===================================================== */
+// =====================================
+// 🔥 주포 개입 가능성 점수
+// =====================================
 
-function level(score){
-
-  if(score >= 80){
-    return "매우 높음";
-  }
-
-  if(score >= 60){
-    return "높음";
-  }
-
-  if(score >= 40){
-    return "보통";
-  }
-
-  if(score >= 20){
-    return "낮음";
-  }
-
-  return "매우 낮음";
+// 1. 거래량 폭증
+if(ratio>=15){
+ masterScore+=30;
+ masterTags.push("RVOL 15배+");
+}else if(ratio>=10){
+ masterScore+=25;
+ masterTags.push("RVOL 10배+");
+}else if(ratio>=5){
+ masterScore+=20;
+ masterTags.push("RVOL 5배+");
+}else if(ratio>=2){
+ masterScore+=10;
+ masterTags.push("평균 이상 거래량");
 }
 
 
-/* =====================================================
-   종목 화면 출력
-===================================================== */
-
-function renderStock(stock){
-
-  const ticker =
-    stock.ticker ??
-    stock.symbol ??
-    "UNKNOWN";
-
-  const name =
-    stock.name ??
-    stock.company ??
-    "미국 급등주";
-
-  const currentPrice = num(
-    stock.price ??
-    stock.currentPrice ??
-    stock.close
-  );
-
-  const change = num(
-    stock.change ??
-    stock.changePct ??
-    stock.pctChange
-  );
-
-  const rvol = num(
-    stock.rvol ??
-    stock.relativeVolume ??
-    stock.volumeRatio
-  );
-
-
-  /* 점수 계산 */
-
-  const leaderScore =
-    calculateLeader(stock);
-
-  const mainPlayerScore =
-    calculateMainPlayer(stock);
-
-  const dumpRisk =
-    calculateDumpRisk(stock);
-
-  const pullback =
-    calculatePullback(stock);
-
-
-  /*
-    진입가
-
-    자동 눌림목 구간의 상단~하단을 사용
-  */
-
-  const entryLow = pullback.low;
-  const entryHigh = pullback.high;
-
-
-  /*
-    지지선
-
-    눌림목 하단보다 조금 아래
-  */
-
-  const support =
-    entryLow * 0.98;
-
-
-  /*
-    손절가
-
-    지지선보다 3% 아래
-  */
-
-  const stop =
-    support * 0.97;
-
-
-  /*
-    목표가
-
-    현재가와 당일 고점 기준
-  */
-
-  const target1 =
-    Math.max(
-      currentPrice * 1.08,
-      num(stock.high ?? stock.dayHigh)
-    );
-
-  const target2 =
-    target1 * 1.10;
-
-
-  document.getElementById("app").innerHTML = `
-
-    <div class="card">
-
-      <div class="rank">
-        🏅 1위 · 오늘의 대장 후보
-      </div>
-
-
-      <div class="ticker">
-        ${ticker}
-      </div>
-
-
-      <div class="name">
-        ${name}
-      </div>
-
-
-      <div class="top-info">
-
-        <div>
-          <div class="label">현재가</div>
-          <div class="value">
-            ${price(currentPrice)}
-          </div>
-        </div>
-
-        <div>
-          <div class="label">등락률</div>
-          <div class="value ${change >= 0 ? "up" : "red"}">
-            ${change >= 0 ? "+" : ""}${change.toFixed(1)}%
-          </div>
-        </div>
-
-        <div>
-          <div class="label">RVOL</div>
-          <div class="value">
-            ${rvol ? "×" + rvol.toFixed(1) : "-"}
-          </div>
-        </div>
-
-      </div>
-
-
-      <!-- 오늘의 대장 가능성 -->
-
-      <div class="score-box">
-
-        <div class="score-title">
-          👑 오늘의 대장 가능성
-        </div>
-
-        <div class="score-value">
-          ${leaderScore} / 100
-        </div>
-
-        <div class="bar">
-          <div
-            class="bar-fill"
-            style="width:${leaderScore}%">
-          </div>
-        </div>
-
-      </div>
-
-
-      <!-- 주포 개입 가능성 -->
-
-      <div class="score-box">
-
-        <div class="score-title">
-          🔥 주포 개입 가능성
-        </div>
-
-        <div class="score-value purple">
-          ${mainPlayerScore}% · ${level(mainPlayerScore)}
-        </div>
-
-        <div class="bar">
-          <div
-            class="bar-fill bar-purple"
-            style="width:${mainPlayerScore}%">
-          </div>
-        </div>
-
-      </div>
-
-
-      <!-- 설거지 위험 -->
-
-      <div class="score-box">
-
-        <div class="score-title">
-          ⚠️ 설거지 위험
-        </div>
-
-        <div class="score-value ${dumpRisk >= 50 ? "red" : "green"}">
-          ${dumpRisk}% · ${level(100 - dumpRisk)}
-        </div>
-
-        <div class="bar">
-          <div
-            class="bar-fill ${dumpRisk >= 50 ? "bar-red" : ""}"
-            style="width:${dumpRisk}%">
-          </div>
-        </div>
-
-      </div>
-
-
-      <!-- 🔥 자동 눌림목 추가 -->
-
-      <div class="pullback-box">
-
-        <div class="pullback-title">
-          🔥 자동 눌림목
-        </div>
-
-        <div class="pullback-range">
-          ${price(entryLow)} ~ ${price(entryHigh)}
-        </div>
-
-        <div class="pullback-desc">
-          급등폭과 당일 고점을 기준으로 자동 계산된 진입 구간
-        </div>
-
-      </div>
-
-
-      <!-- 매매 레벨 -->
-
-      <div class="trade-grid">
-
-        <div class="trade-item">
-          <div class="label">진입가</div>
-          <div class="price green">
-            ${price(entryLow)}~${price(entryHigh)}
-          </div>
-        </div>
-
-        <div class="trade-item">
-          <div class="label">손절가</div>
-          <div class="price red">
-            ${price(stop)}
-          </div>
-        </div>
-
-        <div class="trade-item">
-          <div class="label">1차 목표</div>
-          <div class="price orange">
-            ${price(target1)}
-          </div>
-        </div>
-
-        <div class="trade-item">
-          <div class="label">2차 목표</div>
-          <div class="price orange">
-            ${price(target2)}
-          </div>
-        </div>
-
-      </div>
-
-
-      <div class="status">
-        ${change > 0 ? "상승" : "하락"} ·
-        ${mainPlayerScore >= 60 ? "🔥 상승 모멘텀" : "관망"}
-      </div>
-
-
-      <div class="note">
-        ※ 자동 눌림목은 당일 고점·현재가·상승률을 기준으로 계산됩니다.<br>
-        ※ 주포 개입 가능성은 거래량·고점 유지·상승률 등을 점수화합니다.<br>
-        ※ 설거지 위험은 고점 대비 하락폭과 급등 후 위치를 기준으로 계산합니다.<br>
-        ※ 참고용 스캐너이며 실제 매매 신호는 아닙니다.
-      </div>
-
-    </div>
-
-  `;
+// 2. 강한 상승
+if(change>=30){
+ masterScore+=20;
+ masterTags.push("초강력 상승");
+}else if(change>=20){
+ masterScore+=17;
+ masterTags.push("강한 상승");
+}else if(change>=10){
+ masterScore+=12;
+ masterTags.push("상승 모멘텀");
 }
 
 
-/* 시작 */
+// 3. 고점 부근 유지
+if(highHold){
+ masterScore+=20;
+ masterTags.push("고점 부근 유지");
+}else if(high>0 && price>=high*0.93){
+ masterScore+=10;
+ masterTags.push("상승 추세 유지");
+}
 
-loadData();
 
-setInterval(loadData, 30000);
+// 4. 거래량 + 가격 동시 폭발
+if(change>=10 && ratio>=5){
+ masterScore+=15;
+ masterTags.push("가격·거래량 동시 폭발");
+}
+
+
+// 5. 저가주 + 높은 거래량
+if(price<5 && ratio>=5){
+ masterScore+=8;
+ masterTags.push("저가주 수급 집중");
+}
+
+
+// 6. 저점 대비 강한 반등
+if(low>0){
+
+ const rebound=((price-low)/low)*100;
+
+ if(rebound>=20){
+  masterScore+=10;
+  masterTags.push("저점 강한 반등");
+ }else if(rebound>=10){
+  masterScore+=5;
+ }
+
+}
+
+
+// =====================================
+// ⚠️ 설거지 / 급락 위험 점수
+// =====================================
+
+// 고점 대비 크게 밀림
+if(high>0){
+
+ const pullback=((high-price)/high)*100;
+
+ if(pullback>=30){
+  riskScore+=35;
+  riskTags.push("고점 대비 급락");
+ }else if(pullback>=20){
+  riskScore+=25;
+  riskTags.push("고점 이탈");
+ }else if(pullback>=10){
+  riskScore+=10;
+ }
+
+}
+
+
+// 급등했지만 고점 유지 실패
+if(change>=20 && high>0 && price<high*0.90){
+ riskScore+=20;
+ riskTags.push("급등 후 매물 출회");
+}
+
+
+// 거래량 폭증 + 가격 약세
+if(ratio>=10 && high>0 && price<high*0.85){
+ riskScore+=20;
+ riskTags.push("대량 거래 후 약세");
+}
+
+
+// =====================================
+// 🔥 자동 눌림목 계산
+// =====================================
+
+// 현재가·당일 저가·당일 고가를 이용해
+// 급등주 추격매수 대신 눌림 매수 구간을 자동 계산
+
+let pullbackLow=0;
+let pullbackHigh=0;
+let pullbackLevel="관망";
+
+// 당일 고가와 저가가 모두 있을 때
+if(high>0 && low>0 && high>low){
+
+ const range=high-low;
+
+ // 강한 상승주는 고점에서 약 25~45% 되돌림 구간
+ pullbackLow=high-(range*0.45);
+ pullbackHigh=high-(range*0.25);
+
+ // 현재가가 이미 눌림 구간 안에 들어왔는지
+ if(price>=pullbackLow && price<=pullbackHigh){
+  pullbackLevel="🔥 눌림목 진입";
+ }else if(price>pullbackHigh){
+  pullbackLevel="⏳ 눌림 대기";
+ }else if(price<pullbackLow){
+  pullbackLevel="⚠️ 지지 확인";
+ }
+
+ // 너무 깊은 가격은 저점 아래로 내려가지 않게 보정
+ pullbackLow=Math.max(pullbackLow,low);
+
+}else{
+
+ // 고가/저가 데이터가 부족할 경우
+ // 현재가 기준 약한 눌림 구간 계산
+ pullbackLow=price*0.94;
+ pullbackHigh=price*0.98;
+
+ if(price>=pullbackLow && price<=pullbackHigh){
+  pullbackLevel="🔥 눌림목 진입";
+ }else{
+  pullbackLevel="⏳ 눌림 대기";
+ }
+
+}
+
+
+// =====================================
+// 점수 보정
+// =====================================
+
+score=Math.min(100,Math.max(0,score));
+masterScore=Math.min(100,Math.max(0,masterScore));
+riskScore=Math.min(100,Math.max(0,riskScore));
+
+
+// 주포 개입 가능성 등급
+let masterLevel="관망";
+
+if(masterScore>=80){
+ masterLevel="🔥 매우 높음";
+}else if(masterScore>=65){
+ masterLevel="🟣 높음";
+}else if(masterScore>=45){
+ masterLevel="🟡 주목";
+}else{
+ masterLevel="⚪ 낮음";
+}
+
+
+// 설거지 위험 등급
+let riskLevel="낮음";
+
+if(riskScore>=60){
+ riskLevel="🔴 높음";
+}else if(riskScore>=35){
+ riskLevel="🟠 주의";
+}else{
+ riskLevel="🟢 낮음";
+}
+
+
+// =====================================
+// 최종 대장 점수
+// =====================================
+
+const leaderScore=Math.min(
+ 100,
+ Math.round(
+  score*0.55 +
+  masterScore*0.35 -
+  riskScore*0.20
+ )
+);
+
+
+// =====================================
+// 진입 / 손절 / 목표
+// =====================================
+
+const entryLow=price*0.985;
+const entryHigh=price*1.005;
+
+const stop=price*0.947;
+
+const target1=price*1.084;
+const target2=price*1.184;
+
+
+return{
+ ...s,
+
+ score,
+ masterScore,
+ riskScore,
+ leaderScore,
+
+ masterLevel,
+ riskLevel,
+
+ ratio,
+
+ tags:[...new Set(tags)],
+ masterTags:[...new Set(masterTags)],
+ riskTags:[...new Set(riskTags)],
+
+ pullbackLow,
+ pullbackHigh,
+ pullbackLevel,
+
+ entryLow,
+ entryHigh,
+ stop,
+ target1,
+ target2
+};
+
+});
+
+
+// =====================================
+// 오늘의 대장 점수순 정렬
+// =====================================
+
+stocks.sort((a,b)=>
+ Number(b.leaderScore||0)-Number(a.leaderScore||0)
+);
+
+
+// =====================================
+// 상위 10개 출력
+// =====================================
+
+let html="";
+
+stocks.slice(0,10).forEach((s,i)=>{
+
+const price=Number(s.price||0);
+
+const change=Number(
+ s.change ||
+ s.changePercent ||
+ s.change_pct ||
+ 0
+);
+
+const volume=Number(s.volume||0);
+
+
+html+=`
+
+<div class="card">
+
+<div class="rank">
+🏅 ${i+1}위 · ${i===0 ? "오늘의 대장주 후보" : "급등 후보"}
+</div>
+
+<div class="symbol">
+${s.symbol || "N/A"}
+</div>
+
+<div class="name">
+${s.name || "미국 중소형주"}
+</div>
+
+
+<div class="row">
+
+<div>
+<div class="label">현재가</div>
+<div class="value">$${price.toFixed(2)}</div>
+</div>
+
+<div>
+<div class="label">등락률</div>
+<div class="value ${change>=0?"green":"red"}">
+${change>=0?"+":""}${change.toFixed(1)}%
+</div>
+</div>
+
+<div>
+<div class="label">RVOL</div>
+<div class="value">
+${s.ratio>0 ? s.ratio.toFixed(1)+"배" : "-"}
+</div>
+</div>
+
+</div>
+
+
+<div class="score">
+
+<div class="label">👑 오늘의 대장 가능성</div>
+
+<div class="value">
+${s.leaderScore} / 100
+</div>
+
+<div class="bar">
+<div style="width:${s.leaderScore}%"></div>
+</div>
+
+</div>
+
+
+<div class="score">
+
+<div class="label">🔥 주포 개입 가능성</div>
+
+<div class="value purple">
+${s.masterScore}% · ${s.masterLevel}
+</div>
+
+<div class="bar master-bar">
+<div style="width:${s.masterScore}%"></div>
+</div>
+
+</div>
+
+
+<div class="score">
+
+<div class="label">⚠️ 설거지 위험</div>
+
+<div class="value ${s.riskScore>=35?"red":"green"}">
+${s.riskScore}% · ${s.riskLevel}
+</div>
+
+<div class="bar risk-bar">
+<div style="width:${s.riskScore}%"></div>
+</div>
+
+</div>
+
+
+<!-- 🔥 자동 눌림목 추가 -->
+
+<div class="pullback-box">
+
+<div class="label">🔥 자동 눌림목</div>
+
+<div class="value orange">
+$${s.pullbackLow.toFixed(2)} ~ $${s.pullbackHigh.toFixed(2)}
+</div>
+
+<div class="small">
+${s.pullbackLevel}
+</div>
+
+</div>
+
+
+<div class="row">
+
+<div>
+<div class="label">진입가</div>
+<div class="value green">
+$${s.entryLow.toFixed(2)}~${s.entryHigh.toFixed(2)}
+</div>
+</div>
+
+<div>
+<div class="label">손절가</div>
+<div class="value red">
+$${s.stop.toFixed(2)}
+</div>
+</div>
+
+</div>
+
+
+<div class="row">
+
+<div>
+<div class="label">1차 목표</div>
+<div class="value orange">
+$${s.target1.toFixed(2)}
+</div>
+</div>
+
+<div>
+<div class="label">2차 목표</div>
+<div class="value orange">
+$${s.target2.toFixed(2)}
+</div>
+</div>
+
+</div>
+
+
+<div class="badges">
+
+${s.tags.map(t=>
+`<span class="badge">${t}</span>`
+).join("")}
+
+${s.masterTags.map(t=>
+`<span class="badge master-badge">🔥 ${t}</span>`
+).join("")}
+
+${s.riskTags.map(t=>
+`<span class="badge risk-badge">⚠️ ${t}</span>`
+).join("")}
+
+${s.pullbackLevel.includes("진입")
+? `<span class="badge pullback-badge">🔥 자동 눌림목</span>`
+: ""
+}
+
+</div>
+
+
+<div class="small">
+※ 자동 눌림목은 당일 고점·저점 변동폭을 기준으로 계산한 추정 매수 구간입니다. 급등주의 추격매수를 줄이기 위한 참고용이며 실제 매매 신호가 아닙니다.
+</div>
+
+<div class="small">
+※ 주포 개입 가능성은 가격·거래량·고점 유지 패턴을 기반으로 계산한 추정 지표입니다. 실제 특정 세력의 존재를 확인하는 기능은 아닙니다.
+</div>
+
+</div>
+
+`;
+
+});
+
+
+if(!html){
+
+html=`
+<div class="card">
+현재 조건에 맞는 급등주 후보가 없습니다.
+</div>
+`;
+
+}
+
+
+document.getElementById("list").innerHTML=html;
+
+
+}catch(e){
+
+document.getElementById("list").innerHTML=`
+
+<div class="card">
+데이터를 불러오지 못했습니다.<br><br>
+data.json 또는 스캐너 업데이트를 확인하세요.
+</div>
+
+`;
+
+}
+
+}
+
+
+load();
+setInterval(load,60000);
 
 </script>
 
