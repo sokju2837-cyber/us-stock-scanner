@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="refresh" content="300">
-<title>US Stock Scanner</title>
+<title>오늘의 급등주 후보</title>
 
 <style>
 *{
@@ -14,8 +13,8 @@
 body{
   margin:0;
   background:#f3f5f8;
-  color:#172033;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  color:#172033;
 }
 
 .wrap{
@@ -25,208 +24,214 @@ body{
 }
 
 .header{
-  background:linear-gradient(135deg,#ffffff,#edf4fb);
-  border-radius:28px;
-  padding:24px;
-  margin-bottom:20px;
-  box-shadow:0 8px 30px rgba(0,0,0,.08);
+  background:linear-gradient(135deg,#ffffff,#edf4ff);
+  border-radius:24px;
+  padding:22px;
+  box-shadow:0 8px 28px rgba(0,0,0,.08);
+  margin-bottom:16px;
 }
 
-.topline{
+.header-top{
   display:flex;
   justify-content:space-between;
   align-items:center;
 }
 
 .title{
+  margin:0;
   font-size:30px;
   font-weight:900;
 }
 
 .live{
-  background:#dff5e7;
-  color:#168548;
-  font-weight:900;
-  padding:10px 18px;
+  background:#dff7e8;
+  color:#1f8a4c;
+  padding:9px 15px;
   border-radius:22px;
+  font-weight:900;
 }
 
-.market{
-  margin-top:12px;
-  font-size:18px;
-  font-weight:800;
+.session{
+  margin-top:10px;
   color:#64748b;
+  font-size:17px;
+  font-weight:700;
 }
 
 .card{
-  background:#fff;
-  border-radius:30px;
-  padding:24px;
-  box-shadow:0 8px 28px rgba(0,0,0,.07);
+  background:#ffffff;
+  border-radius:24px;
+  padding:20px;
+  margin-bottom:16px;
+  box-shadow:0 8px 28px rgba(0,0,0,.08);
 }
 
 .rank{
   color:#64748b;
-  font-size:20px;
+  font-size:18px;
   font-weight:800;
-  margin-bottom:12px;
+  margin-bottom:5px;
 }
 
 .symbol{
-  font-size:56px;
-  font-weight:1000;
-  letter-spacing:-2px;
-  line-height:1;
+  font-size:38px;
+  font-weight:900;
+  margin-bottom:4px;
 }
 
 .type{
-  margin-top:12px;
   color:#64748b;
-  font-size:22px;
-  font-weight:800;
+  font-size:18px;
+  font-weight:700;
+  margin-bottom:20px;
 }
 
-.price-row{
+.top-row{
   display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:16px;
-  margin-top:28px;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:10px;
+  margin-bottom:14px;
 }
 
 .label{
   color:#64748b;
-  font-size:16px;
+  font-size:14px;
   font-weight:800;
+  margin-bottom:5px;
 }
 
-.price{
-  margin-top:7px;
-  font-size:32px;
+.value{
+  font-size:22px;
   font-weight:900;
 }
 
-.green{
-  color:#168548;
+.up{
+  color:#16854c;
 }
 
-.red{
-  color:#d93025;
-}
-
-.gray{
-  color:#64748b;
+.down{
+  color:#d6382e;
 }
 
 .score-box{
-  margin-top:26px;
-  padding:22px;
-  border-radius:24px;
-  background:#eef3f9;
+  background:#edf2f8;
+  border-radius:18px;
+  padding:15px;
+  margin-bottom:12px;
 }
 
 .score-title{
   color:#64748b;
-  font-size:17px;
+  font-size:15px;
   font-weight:800;
 }
 
-.score-number{
-  margin-top:8px;
-  font-size:38px;
-  font-weight:1000;
+.score-value{
+  font-size:28px;
+  font-weight:900;
+  margin:8px 0 10px;
 }
 
 .bar{
   width:100%;
-  height:20px;
-  margin-top:16px;
-  background:#dbe2ea;
+  height:14px;
+  background:#d7dee9;
   border-radius:20px;
   overflow:hidden;
 }
 
-.fill{
+.bar-fill{
   height:100%;
-  background:linear-gradient(90deg,#1b9a52,#5ad07e);
+  background:linear-gradient(90deg,#188a4b,#63c98d);
   border-radius:20px;
-  transition:width .4s;
 }
 
-.detail-grid{
+.grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:14px;
-  margin-top:20px;
+  gap:10px;
+}
+
+.item{
+  background:#f1f4f8;
+  border-radius:16px;
+  padding:14px;
+}
+
+.item .small{
+  color:#64748b;
+  font-size:14px;
+  font-weight:800;
+  margin-bottom:6px;
+}
+
+.item .big{
+  font-size:19px;
+  font-weight:900;
+}
+
+.money{
+  color:#19864c;
+}
+
+.warning{
+  color:#d73a2f;
 }
 
 .detail{
-  background:#f5f7fa;
-  padding:18px;
-  border-radius:20px;
-}
-
-.detail strong{
-  display:block;
-  font-size:22px;
-  margin-top:8px;
-}
-
-.alert{
-  margin-top:22px;
-  border:2px solid #f0c37a;
+  margin-top:12px;
+  padding:15px;
+  border-radius:16px;
+  border:1px solid #ffd18a;
   background:#fffaf0;
-  border-radius:24px;
-  padding:20px;
 }
 
-.alert-title{
-  font-size:20px;
+.detail-title{
+  color:#b85b00;
   font-weight:900;
-  color:#c65a08;
+  margin-bottom:7px;
 }
 
-.alert-value{
-  margin-top:8px;
-  font-size:28px;
-  font-weight:1000;
-  color:#d35400;
+.detail-text{
+  font-size:17px;
+  font-weight:800;
+  color:#8a4a00;
+  line-height:1.5;
 }
 
 .updated{
   text-align:center;
-  margin-top:18px;
-  color:#64748b;
-  font-size:14px;
+  color:#94a3b8;
+  font-size:13px;
+  padding:10px;
 }
 
-.error{
+.empty{
   text-align:center;
-  padding:50px 20px;
-  color:#d93025;
+  padding:40px 20px;
+  color:#64748b;
   font-weight:800;
 }
 
-@media(max-width:500px){
+@media(max-width:600px){
   .wrap{
-    padding:12px;
-  }
-
-  .header,
-  .card{
-    border-radius:22px;
-    padding:18px;
+    padding:10px;
   }
 
   .title{
-    font-size:24px;
+    font-size:25px;
   }
 
   .symbol{
-    font-size:48px;
+    font-size:34px;
   }
 
-  .price{
-    font-size:27px;
+  .top-row{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .grid{
+    grid-template-columns:1fr;
   }
 }
 </style>
@@ -237,204 +242,358 @@ body{
 <div class="wrap">
 
   <div class="header">
-    <div class="topline">
-      <div class="title">오늘의 급등주 후보</div>
+    <div class="header-top">
+      <h1 class="title">오늘의 급등주 후보</h1>
       <div class="live">LIVE</div>
     </div>
 
-    <div class="market">🔴 미국 시장 휴장</div>
+    <div class="session" id="session">🔴 미국 시장 스캔</div>
   </div>
 
   <div id="app">
-    <div class="card">
-      <div class="error">데이터 불러오는 중...</div>
-    </div>
+    <div class="empty">데이터 불러오는 중...</div>
   </div>
+
+  <div class="updated" id="updated"></div>
 
 </div>
 
 <script>
+
+function num(v, fallback=0){
+  const n = Number(v);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function text(v, fallback="-"){
+  if(v === undefined || v === null || v === "") return fallback;
+  return String(v);
+}
+
+function formatPrice(v){
+  const n = num(v, null);
+
+  if(n === null) return "-";
+
+  if(n >= 100){
+    return "$" + n.toFixed(2);
+  }
+
+  if(n >= 1){
+    return "$" + n.toFixed(2);
+  }
+
+  return "$" + n.toFixed(4);
+}
+
+function formatVolume(v){
+  const n = num(v, 0);
+
+  if(!n) return "데이터 없음";
+
+  if(n >= 1000000){
+    return (n / 1000000).toFixed(2) + "M";
+  }
+
+  if(n >= 1000){
+    return (n / 1000).toFixed(1) + "K";
+  }
+
+  return n.toLocaleString();
+}
+
+function getScore(stock){
+  let score =
+    stock.score ??
+    stock.totalScore ??
+    stock.leaderScore ??
+    stock.probability ??
+    0;
+
+  score = num(score, 0);
+
+  return Math.max(0, Math.min(100, score));
+}
+
+function getLeader(stock, score){
+
+  if(stock.leader !== undefined) return text(stock.leader);
+  if(stock.leaderPossible !== undefined) return text(stock.leaderPossible);
+  if(stock.leader_probability !== undefined) return text(stock.leader_probability);
+
+  if(score >= 80) return "매우 높음";
+  if(score >= 65) return "높음";
+  if(score >= 50) return "보통";
+
+  return "낮음";
+}
+
+function getMajor(stock){
+
+  if(stock.majorPlayer !== undefined) return text(stock.majorPlayer);
+  if(stock.major_probability !== undefined) return text(stock.major_probability);
+  if(stock.majorIntervention !== undefined) return text(stock.majorIntervention);
+  if(stock.major !== undefined) return text(stock.major);
+
+  return "분석 중";
+}
+
+function getPullback(stock){
+
+  if(stock.pullback !== undefined) return text(stock.pullback);
+  if(stock.dip !== undefined) return text(stock.dip);
+  if(stock.entrySignal !== undefined) return text(stock.entrySignal);
+
+  return "눌림 확인";
+}
+
+function getEntry(stock, price){
+
+  if(stock.entry !== undefined) return text(stock.entry);
+  if(stock.entryPrice !== undefined) return text(stock.entryPrice);
+  if(stock.entry_range !== undefined) return text(stock.entry_range);
+
+  return formatPrice(price * 0.985) + " ~ " + formatPrice(price);
+}
+
+function getStop(stock, price){
+
+  if(stock.stop !== undefined) return text(stock.stop);
+  if(stock.stopLoss !== undefined) return text(stock.stopLoss);
+  if(stock.stop_loss !== undefined) return text(stock.stop_loss);
+
+  return formatPrice(price * 0.95);
+}
+
+function getTarget1(stock, price){
+
+  if(stock.target1 !== undefined) return text(stock.target1);
+  if(stock.target !== undefined) return text(stock.target);
+
+  return formatPrice(price * 1.08);
+}
+
+function getTarget2(stock, price){
+
+  if(stock.target2 !== undefined) return text(stock.target2);
+
+  return formatPrice(price * 1.15);
+}
+
+function getAnalysis(stock, score, change){
+
+  if(stock.analysis !== undefined) return text(stock.analysis);
+  if(stock.detail !== undefined) return text(stock.detail);
+
+  if(score >= 80){
+    return "강한 상승 흐름과 거래량 증가 여부를 확인하며 진입 기회를 관찰";
+  }
+
+  if(change >= 10){
+    return "급등 후 추격매수보다 눌림목 확인 후 진입을 우선 검토";
+  }
+
+  if(change > 0){
+    return "상승 흐름 유지 여부와 거래량 증가를 확인하며 관찰";
+  }
+
+  return "추세 전환 여부를 확인하면서 보수적으로 접근";
+}
+
+function renderStock(stock, index){
+
+  const price = num(stock.price ?? stock.currentPrice ?? stock.c, 0);
+  const change = num(stock.change ?? stock.changePercent ?? stock.pct, 0);
+  const volume = stock.volume ?? stock.vol ?? stock.v ?? 0;
+  const score = getScore(stock);
+
+  const symbol = text(
+    stock.symbol ??
+    stock.ticker ??
+    stock.name
+  );
+
+  const leader = getLeader(stock, score);
+  const major = getMajor(stock);
+  const pullback = getPullback(stock);
+
+  const entry = getEntry(stock, price);
+  const stop = getStop(stock, price);
+  const target1 = getTarget1(stock, price);
+  const target2 = getTarget2(stock, price);
+
+  const analysis = getAnalysis(stock, score, change);
+
+  const changeClass = change >= 0 ? "up" : "down";
+  const changeSign = change >= 0 ? "+" : "";
+
+  return `
+  <div class="card">
+
+    <div class="rank">🏅 ${index + 1}위 · 오늘의 급등주 후보</div>
+
+    <div class="symbol">${symbol}</div>
+
+    <div class="type">미국 중소형주</div>
+
+    <div class="top-row">
+
+      <div>
+        <div class="label">현재가</div>
+        <div class="value">${formatPrice(price)}</div>
+      </div>
+
+      <div>
+        <div class="label">등락률</div>
+        <div class="value ${changeClass}">
+          ${changeSign}${change.toFixed(2)}%
+        </div>
+      </div>
+
+      <div>
+        <div class="label">거래량</div>
+        <div class="value">${formatVolume(volume)}</div>
+      </div>
+
+    </div>
+
+    <div class="score-box">
+
+      <div class="score-title">👑 돈 벌 가능성 / 대장 가능성</div>
+
+      <div class="score-value">${score} / 100</div>
+
+      <div class="bar">
+        <div class="bar-fill" style="width:${score}%"></div>
+      </div>
+
+    </div>
+
+    <div class="grid">
+
+      <div class="item">
+        <div class="small">🔥 대장 가능성</div>
+        <div class="big money">${leader}</div>
+      </div>
+
+      <div class="item">
+        <div class="small">🎯 주포 개입 가능성</div>
+        <div class="big">${major}</div>
+      </div>
+
+      <div class="item">
+        <div class="small">📉 눌림목</div>
+        <div class="big">${pullback}</div>
+      </div>
+
+      <div class="item">
+        <div class="small">📊 거래량</div>
+        <div class="big">${formatVolume(volume)}</div>
+      </div>
+
+      <div class="item">
+        <div class="small">🎯 진입가</div>
+        <div class="big money">${entry}</div>
+      </div>
+
+      <div class="item">
+        <div class="small">🔴 손절가</div>
+        <div class="big warning">${stop}</div>
+      </div>
+
+      <div class="item">
+        <div class="small">1차 목표</div>
+        <div class="big">${target1}</div>
+      </div>
+
+      <div class="item">
+        <div class="small">2차 목표</div>
+        <div class="big">${target2}</div>
+      </div>
+
+    </div>
+
+    <div class="detail">
+
+      <div class="detail-title">🔥 ${index + 1}위 종목 상세 분석</div>
+
+      <div class="detail-text">
+        ${analysis}
+      </div>
+
+    </div>
+
+  </div>
+  `;
+}
 
 async function loadData(){
 
   try{
 
     const response = await fetch(
-      "data.json?t=" + Date.now(),
-      { cache:"no-store" }
+      "./data.json?t=" + Date.now()
     );
 
     if(!response.ok){
-      throw new Error("데이터를 불러오지 못했습니다.");
+      throw new Error("data.json 불러오기 실패");
     }
 
     const data = await response.json();
 
-    const stocks = data.stocks || [];
+    let stocks = [];
 
-    if(stocks.length === 0){
-      throw new Error("종목 데이터가 없습니다.");
+    if(Array.isArray(data)){
+      stocks = data;
+    }
+    else if(Array.isArray(data.stocks)){
+      stocks = data.stocks;
+    }
+    else if(Array.isArray(data.results)){
+      stocks = data.results;
     }
 
-    stocks.sort((a,b) => (b.score || 0) - (a.score || 0));
+    stocks = stocks
+      .sort((a,b) => getScore(b) - getScore(a))
+      .slice(0,10);
 
-    const top = stocks[0];
+    const app = document.getElementById("app");
 
-    const price = Number(top.price || 0);
-    const change = Number(top.change || 0);
-    const score = Math.max(0,Math.min(100,Number(top.score || 0)));
-    const volume = Number(top.volume || 0);
+    if(stocks.length === 0){
 
-    const changeClass =
-      change >= 0 ? "green" : "red";
-
-    const changeSign =
-      change >= 0 ? "+" : "";
-
-    const entryLow = price * 0.985;
-    const entryHigh = price * 1.005;
-    const stop = price * 0.95;
-    const target1 = price * 1.08;
-    const target2 = price * 1.18;
-
-    document.getElementById("app").innerHTML = `
-
-      <div class="card">
-
-        <div class="rank">
-          🥇 1위 · 오늘의 대장주 후보
+      app.innerHTML = `
+        <div class="empty">
+          아직 표시할 종목 데이터가 없습니다.
         </div>
+      `;
 
-        <div class="symbol">
-          ${top.symbol || "-"}
-        </div>
+      return;
+    }
 
-        <div class="type">
-          미국 중소형주
-        </div>
+    app.innerHTML = stocks
+      .map((stock,index) => renderStock(stock,index))
+      .join("");
 
-        <div class="price-row">
+    document.getElementById("updated").innerText =
+      "마지막 업데이트: " +
+      (data.updated || new Date().toLocaleString("ko-KR"));
 
-          <div>
-            <div class="label">현재가</div>
-            <div class="price">
-              $${price.toFixed(2)}
-            </div>
-          </div>
-
-          <div>
-            <div class="label">등락률</div>
-            <div class="price ${changeClass}">
-              ${changeSign}${change.toFixed(2)}%
-            </div>
-          </div>
-
-        </div>
-
-        <div class="score-box">
-
-          <div class="score-title">
-            👑 오늘의 대장 가능성
-          </div>
-
-          <div class="score-number">
-            ${score} / 100
-          </div>
-
-          <div class="bar">
-            <div
-              class="fill"
-              style="width:${score}%">
-            </div>
-          </div>
-
-        </div>
-
-        <div class="detail-grid">
-
-          <div class="detail">
-            <div class="label">🔥 주도권 가능성</div>
-            <strong class="green">
-              ${score >= 80 ? "매우 높음" :
-                score >= 65 ? "높음" :
-                score >= 50 ? "보통" : "낮음"}
-            </strong>
-          </div>
-
-          <div class="detail">
-            <div class="label">📊 거래량</div>
-            <strong>
-              ${volume > 0 ? volume.toLocaleString() : "데이터 없음"}
-            </strong>
-          </div>
-
-          <div class="detail">
-            <div class="label">🎯 진입가</div>
-            <strong class="green">
-              $${entryLow.toFixed(2)} ~ $${entryHigh.toFixed(2)}
-            </strong>
-          </div>
-
-          <div class="detail">
-            <div class="label">🛑 손절가</div>
-            <strong class="red">
-              $${stop.toFixed(2)}
-            </strong>
-          </div>
-
-          <div class="detail">
-            <div class="label">1차 목표</div>
-            <strong>
-              $${target1.toFixed(2)}
-            </strong>
-          </div>
-
-          <div class="detail">
-            <div class="label">2차 목표</div>
-            <strong>
-              $${target2.toFixed(2)}
-            </strong>
-          </div>
-
-        </div>
-
-        <div class="alert">
-          <div class="alert-title">
-            🔥 자동 눌림목
-          </div>
-
-          <div class="alert-value">
-            ${score >= 70 ? "매수 감시 가능" : "추가 데이터 대기"}
-          </div>
-        </div>
-
-      </div>
-
-      <div class="updated">
-        마지막 업데이트: ${data.updated || "확인 중"}
-      </div>
-    `;
-
-  }catch(error){
-
-    document.getElementById("app").innerHTML = `
-      <div class="card">
-        <div class="error">
-          ❌ 데이터 연결 오류<br><br>
-          data.json 파일을 확인하세요.
-        </div>
-      </div>
-    `;
+  }
+  catch(error){
 
     console.error(error);
 
+    document.getElementById("app").innerHTML = `
+      <div class="empty">
+        ❌ 데이터를 불러오지 못했습니다.
+      </div>
+    `;
   }
-
 }
 
 loadData();
 
-setInterval(loadData, 30000);
+setInterval(loadData, 60000);
 
 </script>
 
