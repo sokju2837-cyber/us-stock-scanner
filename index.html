@@ -40,6 +40,12 @@ main{padding:15px;max-width:760px;margin:auto}
  border-radius:20px;
  font-size:13px
 }
+.session{
+ margin-top:8px;
+ font-size:12px;
+ color:#64748b;
+ font-weight:700
+}
 .card{border:1px solid #edf0f4}
 .rank{color:#64748b;font-weight:800;font-size:14px}
 .symbol{font-size:34px;font-weight:900;margin-top:5px}
@@ -73,12 +79,8 @@ main{padding:15px;max-width:760px;margin:auto}
  height:100%;
  background:#16a34a
 }
-.master-bar div{
- background:#7c3aed
-}
-.risk-bar div{
- background:#dc2626
-}
+.master-bar div{background:#7c3aed}
+.risk-bar div{background:#dc2626}
 .pullback-box{
  background:#fff7ed;
  border:1px solid #fed7aa;
@@ -86,12 +88,8 @@ main{padding:15px;max-width:760px;margin:auto}
  border-radius:16px;
  margin:18px 0
 }
-.pullback-box .label{
- color:#9a3412
-}
-.pullback-box .value{
- color:#ea580c
-}
+.pullback-box .label{color:#9a3412}
+.pullback-box .value{color:#ea580c}
 .badges{margin-top:15px}
 .badge{
  display:inline-block;
@@ -140,6 +138,7 @@ footer{
 <div class="status">
 오늘의 급등주 후보
 <span class="live">LIVE</span>
+<div class="session" id="sessionText">시장 상태 확인 중...</div>
 </div>
 
 <div id="list">데이터 불러오는 중...</div>
@@ -152,6 +151,51 @@ US Small Cap Momentum Scanner
 
 <script>
 
+function num(...values){
+ for(const v of values){
+  const n=Number(v);
+  if(Number.isFinite(n) && n!==0) return n;
+ }
+ return 0;
+}
+
+function getSession(){
+ const now=new Date();
+
+ const parts=new Intl.DateTimeFormat("en-US",{
+  timeZone:"America/New_York",
+  hour:"2-digit",
+  minute:"2-digit",
+  hour12:false,
+  weekday:"short"
+ }).formatToParts(now);
+
+ const obj={};
+ parts.forEach(p=>obj[p.type]=p.value);
+
+ const hour=Number(obj.hour);
+ const minute=Number(obj.minute);
+ const total=hour*60+minute;
+
+ if(["Sat","Sun"].includes(obj.weekday)){
+  return {type:"CLOSED",label:"🔴 미국 시장 휴장"};
+ }
+
+ if(total>=240 && total<570){
+  return {type:"PRE",label:"🌅 프리장 데이터 분석 중"};
+ }
+
+ if(total>=570 && total<960){
+  return {type:"REGULAR",label:"🟢 미국 정규장 실시간 분석"};
+ }
+
+ if(total>=960 && total<1200){
+  return {type:"AFTER",label:"🌙 애프터·데이장 데이터 분석 중"};
+ }
+
+ return {type:"CLOSED",label:"⚫ 장외 시간 · 최신 데이터 기준 분석"};
+}
+
 async function load(){
 
 try{
@@ -159,12 +203,10 @@ try{
 const r=await fetch("data.json?t="+Date.now());
 const d=await r.json();
 
+const session=getSession();
+document.getElementById("sessionText").textContent=session.label;
+
 let stocks=d.stocks || [];
-
-
-// =====================================
-// 우량주 / 대형주 제거
-// =====================================
 
 const mega=[
 "AAPL","MSFT","NVDA","AMZN","GOOGL","GOOG",
@@ -176,12 +218,23 @@ const mega=[
 stocks=stocks.filter(s=>{
 
 const symbol=String(s.symbol||"").toUpperCase();
-const price=Number(s.price||0);
-const cap=Number(
- s.marketCap ||
- s.market_cap ||
- s.marketcap ||
- 0
+
+const price=num(
+ s.price,
+ s.last,
+ s.lastPrice,
+ s.currentPrice,
+ s.regularMarketPrice,
+ s.afterHoursPrice,
+ s.postMarketPrice,
+ s.preMarketPrice,
+ s.extendedHoursPrice
+);
+
+const cap=num(
+ s.marketCap,
+ s.market_cap,
+ s.marketcap
 );
 
 if(mega.includes(symbol)) return false;
@@ -192,33 +245,84 @@ if(cap>0 && cap>2000000000) return false;
 return true;
 });
 
-
-// =====================================
-// 급등주 + 주포 개입 가능성 계산
-// =====================================
-
 stocks=stocks.map(s=>{
 
-const price=Number(s.price||0);
-
-const change=Number(
- s.change ||
- s.changePercent ||
- s.change_pct ||
- 0
+let price=num(
+ s.price,
+ s.last,
+ s.lastPrice,
+ s.currentPrice,
+ s.regularMarketPrice,
+ s.afterHoursPrice,
+ s.postMarketPrice,
+ s.preMarketPrice,
+ s.extendedHoursPrice
 );
 
-const volume=Number(s.volume||0);
-
-const avgVolume=Number(
- s.avgVolume ||
- s.averageVolume ||
- s.avg_volume ||
- 0
+let change=num(
+ s.change,
+ s.changePercent,
+ s.change_pct,
+ s.percentChange,
+ s.regularMarketChangePercent,
+ s.afterHoursChangePercent,
+ s.postMarketChangePercent,
+ s.preMarketChangePercent,
+ s.extendedHoursChangePercent
 );
 
-const high=Number(s.high||0);
-const low=Number(s.low||0);
+let volume=num(
+ s.volume,
+ s.totalVolume,
+ s.regularMarketVolume,
+ s.dayVolume,
+ s.sessionVolume,
+ s.extendedHoursVolume,
+ s.afterHoursVolume,
+ s.postMarketVolume,
+ s.preMarketVolume
+);
+
+let avgVolume=num(
+ s.avgVolume,
+ s.averageVolume,
+ s.avg_volume,
+ s.averageDailyVolume,
+ s.avgDailyVolume
+);
+
+let high=num(
+ s.high,
+ s.dayHigh,
+ s.regularMarketDayHigh,
+ s.sessionHigh,
+ s.extendedHoursHigh,
+ s.afterHoursHigh,
+ s.postMarketHigh,
+ s.preMarketHigh
+);
+
+let low=num(
+ s.low,
+ s.dayLow,
+ s.regularMarketDayLow,
+ s.sessionLow,
+ s.extendedHoursLow,
+ s.afterHoursLow,
+ s.postMarketLow,
+ s.preMarketLow
+);
+
+const previousClose=num(
+ s.previousClose,
+ s.prevClose,
+ s.regularMarketPreviousClose,
+ s.close
+);
+
+if(!change && previousClose>0 && price>0){
+ change=((price-previousClose)/previousClose)*100;
+}
 
 let score=0;
 let masterScore=0;
@@ -228,23 +332,14 @@ let tags=[];
 let masterTags=[];
 let riskTags=[];
 
-
-// =====================================
-// RVOL 계산
-// =====================================
-
 let ratio=0;
+let rvolAvailable=false;
 
 if(avgVolume>0 && volume>0){
  ratio=volume/avgVolume;
+ rvolAvailable=true;
 }
 
-
-// =====================================
-// 기존 급등주 점수
-// =====================================
-
-// 상승률
 if(change>=20){
  score+=25;
  tags.push("급등");
@@ -253,26 +348,39 @@ if(change>=20){
  tags.push("상승");
 }else if(change>=5){
  score+=12;
+ tags.push("상승세");
 }
 
+if(rvolAvailable){
 
-// 거래량
-if(ratio>=10){
- score+=30;
- tags.push("거래량 폭증");
-}else if(ratio>=5){
- score+=25;
- tags.push("거래량 급증");
-}else if(ratio>=2){
- score+=15;
- tags.push("거래량 증가");
+ if(ratio>=10){
+  score+=30;
+  tags.push("거래량 폭증");
+ }else if(ratio>=5){
+  score+=25;
+  tags.push("거래량 급증");
+ }else if(ratio>=2){
+  score+=15;
+  tags.push("거래량 증가");
+ }else{
+  score+=8;
+ }
+
 }else if(volume>0){
- score+=10;
- tags.push("거래량");
+
+ score+=8;
+ tags.push("실시간 거래량");
+
+ if(volume>=10000000){
+  score+=18;
+  tags.push("대량 거래");
+ }else if(volume>=3000000){
+  score+=12;
+  tags.push("거래 집중");
+ }
+
 }
 
-
-// 저가주 가점
 if(price<1){
  score+=10;
  tags.push("$1 이하");
@@ -283,49 +391,56 @@ if(price<1){
  score+=4;
 }
 
-
-// 고가 돌파
-const highHold=
- high>0 && price>=high*0.97;
+const highHold=high>0 && price>=high*0.97;
 
 if(high>0 && price>=high*0.98){
  score+=15;
- tags.push("고가 돌파");
+ tags.push("고가 부근");
 }
 
-
-// 거래량 + 상승
-if(change>=10 && ratio>=3){
+if(change>=10 && (
+ ratio>=3 ||
+ (!rvolAvailable && volume>=3000000)
+)){
  score+=10;
  tags.push("수급 집중");
 }
 
-
-// 모멘텀
 if(change>=15){
  score+=5;
  tags.push("모멘텀");
 }
 
+if(rvolAvailable){
 
-// =====================================
-// 🔥 주포 개입 가능성 점수
-// =====================================
+ if(ratio>=15){
+  masterScore+=30;
+  masterTags.push("RVOL 15배+");
+ }else if(ratio>=10){
+  masterScore+=25;
+  masterTags.push("RVOL 10배+");
+ }else if(ratio>=5){
+  masterScore+=20;
+  masterTags.push("RVOL 5배+");
+ }else if(ratio>=2){
+  masterScore+=10;
+  masterTags.push("평균 이상 거래량");
+ }
 
-if(ratio>=15){
- masterScore+=30;
- masterTags.push("RVOL 15배+");
-}else if(ratio>=10){
- masterScore+=25;
- masterTags.push("RVOL 10배+");
-}else if(ratio>=5){
- masterScore+=20;
- masterTags.push("RVOL 5배+");
-}else if(ratio>=2){
- masterScore+=10;
- masterTags.push("평균 이상 거래량");
+}else if(volume>0){
+
+ if(volume>=10000000){
+  masterScore+=20;
+  masterTags.push("대량 거래 집중");
+ }else if(volume>=3000000){
+  masterScore+=12;
+  masterTags.push("거래량 집중");
+ }else if(volume>=500000){
+  masterScore+=6;
+  masterTags.push("장중 거래 발생");
+ }
+
 }
-
 
 if(change>=30){
  masterScore+=20;
@@ -338,7 +453,6 @@ if(change>=30){
  masterTags.push("상승 모멘텀");
 }
 
-
 if(highHold){
  masterScore+=20;
  masterTags.push("고점 부근 유지");
@@ -347,18 +461,21 @@ if(highHold){
  masterTags.push("상승 추세 유지");
 }
 
-
-if(change>=10 && ratio>=5){
+if(change>=10 && (
+ ratio>=5 ||
+ (!rvolAvailable && volume>=3000000)
+)){
  masterScore+=15;
- masterTags.push("가격·거래량 동시 폭발");
+ masterTags.push("가격·거래량 동시 증가");
 }
 
-
-if(price<5 && ratio>=5){
+if(price<5 && (
+ ratio>=5 ||
+ volume>=3000000
+)){
  masterScore+=8;
  masterTags.push("저가주 수급 집중");
 }
-
 
 if(low>0){
 
@@ -372,11 +489,6 @@ if(low>0){
  }
 
 }
-
-
-// =====================================
-// ⚠️ 설거지 / 급락 위험 점수
-// =====================================
 
 if(high>0){
 
@@ -394,40 +506,32 @@ if(high>0){
 
 }
 
-
 if(change>=20 && high>0 && price<high*0.90){
  riskScore+=20;
  riskTags.push("급등 후 매물 출회");
 }
 
-
-if(ratio>=10 && high>0 && price<high*0.85){
+if(
+ (ratio>=10 || (!rvolAvailable && volume>=10000000)) &&
+ high>0 &&
+ price<high*0.85
+){
  riskScore+=20;
  riskTags.push("대량 거래 후 약세");
 }
 
-
-// =====================================
-// 🔥 자동 눌림목 계산 추가
-// 현재가가 당일 고점에서 일정 수준 눌렸을 때
-// 무작정 추격하지 않고 눌림 구간을 자동 제시
-// =====================================
-
 let pullbackLow=0;
 let pullbackHigh=0;
-let pullbackLevel="대기";
+let pullbackLevel="데이터 부족";
 let pullbackPct=0;
 
 if(high>0 && low>0 && high>low){
 
  const range=high-low;
 
- // 고점에서 15~30% 눌린 구간
- // 급등주의 추격매수보다 눌림 진입을 위한 구간
  pullbackHigh=high-(range*0.15);
  pullbackLow=high-(range*0.30);
 
- // 현재가가 눌림 구간에 있는지
  if(price>=pullbackLow && price<=pullbackHigh){
   pullbackLevel="🔥 눌림목 구간";
  }else if(price>pullbackHigh){
@@ -438,19 +542,18 @@ if(high>0 && low>0 && high>low){
 
  pullbackPct=((high-price)/high)*100;
 
+}else if(previousClose>0 && price>0){
+
+ pullbackHigh=price*0.985;
+ pullbackLow=price*0.95;
+ pullbackLevel="📊 데이장 기준 임시 눌림 구간";
+
 }
-
-
-// =====================================
-// 점수 보정
-// =====================================
 
 score=Math.min(100,Math.max(0,score));
 masterScore=Math.min(100,Math.max(0,masterScore));
 riskScore=Math.min(100,Math.max(0,riskScore));
 
-
-// 주포 개입 가능성 등급
 let masterLevel="관망";
 
 if(masterScore>=80){
@@ -463,8 +566,6 @@ if(masterScore>=80){
  masterLevel="⚪ 낮음";
 }
 
-
-// 설거지 위험 등급
 let riskLevel="낮음";
 
 if(riskScore>=60){
@@ -475,56 +576,47 @@ if(riskScore>=60){
  riskLevel="🟢 낮음";
 }
 
-
-// =====================================
-// 최종 대장 점수
-// =====================================
-
 const leaderScore=Math.min(
  100,
+ Math.max(
+ 0,
  Math.round(
   score*0.55 +
   masterScore*0.35 -
   riskScore*0.20
  )
+ )
 );
-
-
-// =====================================
-// 진입 / 손절 / 목표
-// =====================================
 
 const entryLow=price*0.985;
 const entryHigh=price*1.005;
-
 const stop=price*0.947;
-
 const target1=price*1.084;
 const target2=price*1.184;
 
-
 return{
  ...s,
-
+ price,
+ change,
+ volume,
+ avgVolume,
+ high,
+ low,
  score,
  masterScore,
  riskScore,
  leaderScore,
-
  masterLevel,
  riskLevel,
-
  ratio,
-
+ rvolAvailable,
  pullbackLow,
  pullbackHigh,
  pullbackLevel,
  pullbackPct,
-
  tags:[...new Set(tags)],
  masterTags:[...new Set(masterTags)],
  riskTags:[...new Set(riskTags)],
-
  entryLow,
  entryHigh,
  stop,
@@ -534,33 +626,13 @@ return{
 
 });
 
-
-// =====================================
-// 오늘의 대장 점수순 정렬
-// =====================================
-
 stocks.sort((a,b)=>
  Number(b.leaderScore||0)-Number(a.leaderScore||0)
 );
 
-
-// =====================================
-// 상위 10개 출력
-// =====================================
-
 let html="";
 
 stocks.slice(0,10).forEach((s,i)=>{
-
-const price=Number(s.price||0);
-
-const change=Number(
- s.change ||
- s.changePercent ||
- s.change_pct ||
- 0
-);
-
 
 html+=`
 
@@ -578,30 +650,34 @@ ${s.symbol || "N/A"}
 ${s.name || "미국 중소형주"}
 </div>
 
-
 <div class="row">
 
 <div>
 <div class="label">현재가</div>
-<div class="value">$${price.toFixed(2)}</div>
+<div class="value">$${s.price.toFixed(2)}</div>
 </div>
 
 <div>
 <div class="label">등락률</div>
-<div class="value ${change>=0?"green":"red"}">
-${change>=0?"+":""}${change.toFixed(1)}%
+<div class="value ${s.change>=0?"green":"red"}">
+${s.change>=0?"+":""}${s.change.toFixed(1)}%
 </div>
 </div>
 
 <div>
 <div class="label">RVOL</div>
 <div class="value">
-${s.ratio>0 ? s.ratio.toFixed(1)+"배" : "-"}
+${
+ s.rvolAvailable
+ ? s.ratio.toFixed(1)+"배"
+ : s.volume>0
+ ? "실시간"
+ : "-"
+}
 </div>
 </div>
 
 </div>
-
 
 <div class="score">
 
@@ -617,7 +693,6 @@ ${s.leaderScore} / 100
 
 </div>
 
-
 <div class="score">
 
 <div class="label">🔥 주포 개입 가능성</div>
@@ -631,7 +706,6 @@ ${s.masterScore}% · ${s.masterLevel}
 </div>
 
 </div>
-
 
 <div class="score">
 
@@ -647,9 +721,6 @@ ${s.riskScore}% · ${s.riskLevel}
 
 </div>
 
-
-<!-- 🔥 자동 눌림목 추가 -->
-
 <div class="pullback-box">
 
 <div class="label">🔥 자동 눌림목</div>
@@ -662,11 +733,12 @@ $${s.pullbackHigh>0?s.pullbackHigh.toFixed(2):"-"}
 
 <div class="small">
 ${s.pullbackLevel}
-${s.pullbackPct>0 ? " · 고점 대비 "+s.pullbackPct.toFixed(1)+"% 눌림" : ""}
+${s.pullbackPct>0
+ ? " · 고점 대비 "+s.pullbackPct.toFixed(1)+"% 눌림"
+ : ""}
 </div>
 
 </div>
-
 
 <div class="row">
 
@@ -686,7 +758,6 @@ $${s.stop.toFixed(2)}
 
 </div>
 
-
 <div class="row">
 
 <div>
@@ -704,7 +775,6 @@ $${s.target2.toFixed(2)}
 </div>
 
 </div>
-
 
 <div class="badges">
 
@@ -726,10 +796,10 @@ ${s.pullbackLevel==="🔥 눌림목 구간"
 
 </div>
 
-
 <div class="small">
-※ 주포 개입 가능성은 가격·거래량·고점 유지 패턴을 기반으로 계산한 추정 지표입니다. 실제 특정 세력의 존재를 확인하는 기능은 아닙니다.<br>
-※ 눌림목은 당일 고가·저가 범위와 현재 위치를 기준으로 자동 계산한 참고 구간입니다.
+※ 프리장·정규장·애프터/데이장 데이터를 자동으로 분석합니다.<br>
+※ 평균 거래량 데이터가 없는 장외 거래는 실시간 거래량 기준으로 대체 계산합니다.<br>
+※ 주포 개입 가능성은 가격·거래량·고점 유지 패턴을 기반으로 한 추정 지표입니다.
 </div>
 
 </div>
@@ -737,7 +807,6 @@ ${s.pullbackLevel==="🔥 눌림목 구간"
 `;
 
 });
-
 
 if(!html){
 
@@ -749,11 +818,11 @@ html=`
 
 }
 
-
 document.getElementById("list").innerHTML=html;
 
-
 }catch(e){
+
+console.error(e);
 
 document.getElementById("list").innerHTML=`
 
@@ -767,7 +836,6 @@ data.json 또는 스캐너 업데이트를 확인하세요.
 }
 
 }
-
 
 load();
 setInterval(load,60000);
