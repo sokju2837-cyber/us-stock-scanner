@@ -3,7 +3,7 @@ name: US Stock Scanner
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "*/5 * * * *"
 
 permissions:
   contents: write
@@ -16,97 +16,226 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Get stock data
+      - name: Scan US stocks
         env:
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
         run: |
           python - <<'PY'
+          import os
           import json
           import urllib.request
           import urllib.parse
           from datetime import datetime, timezone
-          import os
+          from zoneinfo import ZoneInfo
+
           key = os.environ.get("FINNHUB_API_KEY", "")
 
+          # 급등 가능성이 높은 미국 중소형주 후보군
           symbols = [
-            
-              "MARA","RIOT","SOUN","IONQ",
-              "RGTI","QBTS","QUBT","BBAI","AI",
-              "MSTR","COIN","HOOD","LCID","RIVN",
-              "NIO","GME","AMC","ASTS","RKLB",
-              "LUNR","ACHR","JOBY","AUR","DNA"
+              "SOUN","PLTR","IONQ","SMCI","BBAI",
+              "RGTI","QBTS","QUBT","AI","NBIS",
+              "OPEN","LUNR","RKLB","ACHR","JOBY",
+              "SOFI","MARA","RIOT","CLSK","HUT",
+              "ASTS","OKLO","IREN","TEM","RCAT",
+              "GME","AMC","KULR","WULF","BMNR"
           ]
 
-          results = []
-
-          for symbol in symbols:
+          def get_quote(symbol):
               try:
-                  url = "https://finnhub.io/api/v1/quote?" + urllib.parse.urlencode({
+                  params = urllib.parse.urlencode({
                       "symbol": symbol,
                       "token": key
                   })
 
-                  with urllib.request.urlopen(url, timeout=10) as r:
-                      d = json.loads(r.read().decode())
+                  url = f"https://finnhub.io/api/v1/quote?{params}"
 
-                  price = d.get("c", 0)
-                  prev = d.get("pc", 0)
-                  high = d.get("h", 0)
-                  low = d.get("l", 0)
-                  volume = d.get("v", 0)
-
-                  if not price or not prev:
-                      continue
-
-                  change = ((price - prev) / prev) * 100
-
-                  score = 0
-
-                  if change >= 5:
-                      score += 30
-                  elif change >= 3:
-                      score += 20
-                  elif change >= 1:
-                      score += 10
-
-                  if high and price >= high * 0.98:
-                      score += 20
-
-                  if change > 0:
-                      score += 20
-
-                  if volume:
-                      score += 20
-
-                  results.append({
-                      "symbol": symbol,
-                      "price": round(price, 2),
-                      "change": round(change, 2),
-                      "volume": volume,
-                      "score": min(score, 100)
-                  })
+                  with urllib.request.urlopen(url, timeout=15) as response:
+                      return json.loads(response.read().decode("utf-8"))
 
               except Exception as e:
-                  print(symbol, e)
+                  print(f"ERROR {symbol}: {e}")
+                  return {}
 
-          results.sort(key=lambda x: x["score"], reverse=True)
+          def get_session():
+              now = datetime.now(ZoneInfo("America/New_York"))
+
+              weekday = now.weekday()
+              hm = now.hour * 60 + now.minute
+
+              if weekday >= 5:
+                  return "미국 시장 휴장"
+
+              if 4 * 60 <= hm < 9 * 60 + 30:
+                  return "프리장"
+
+              if 9 * 60 + 30 <= hm < 16 * 60:
+                  return "정규장"
+
+              if 16 * 60 <= hm < 20 * 60:
+                  return "애프터장"
+
+              return "미국 시장 휴장"
+
+          session = get_session()
+
+          results = []
+
+          for symbol in symbols:
+              d = get_quote(symbol)
+
+              price = float(d.get("c") or 0)
+              prev_close = float(d.get("pc") or 0)
+              high = float(d.get("h") or 0)
+              low = float(d.get("l") or 0)
+              change = float(d.get("dp") or 0)
+
+              if price <= 0 or prev_close <= 0:
+                  continue
+
+              # =========================
+              # 급등/돈벌 가능성 점수
+              # =========================
+              score = 0
+
+              # 상승률
+              if change >= 20:
+                  score += 45
+              elif change >= 15:
+                  score += 38
+              elif change >= 10:
+                  score += 30
+              elif change >= 7:
+                  score += 24
+              elif change >= 5:
+                  score += 18
+              elif change >= 3:
+                  score += 12
+              elif change > 0:
+                  score += 5
+              else:
+                  score -= 10
+
+              # 당일 저점 대비 반등
+              if low > 0:
+                  rebound = ((price - low) / low) * 100
+
+                  if rebound >= 15:
+                      score += 20
+                  elif rebound >= 10:
+                      score += 15
+                  elif rebound >= 5:
+                      score += 8
+
+              # 고점 근처 여부
+              if high > 0:
+                  near_high = price / high
+
+                  if near_high >= 0.99:
+                      score += 15
+                  elif near_high >= 0.97:
+                      score += 10
+                  elif near_high >= 0.94:
+                      score += 5
+
+              score = max(0, min(100, round(score)))
+
+              # 돈 벌 가능성 = 최종 핵심 점수
+              money_probability = score
+
+              # 주포 개입 가능성
+              if abs(change) >= 15:
+                  major_player = min(95, score + 10)
+              elif abs(change) >= 8:
+                  major_player = min(85, score + 5)
+              else:
+                  major_player = max(10, score - 10)
+
+              # 눌림목 판단
+              pullback = "낮음"
+
+              if change > 0 and high > price and high > 0:
+                  high_pullback = ((high - price) / high) * 100
+
+                  if 1 <= high_pullback <= 8:
+                      pullback = "높음"
+                  elif 8 < high_pullback <= 15:
+                      pullback = "보통"
+
+              # 진입가
+              entry_low = round(price * 0.985, 2)
+              entry_high = round(price * 1.005, 2)
+
+              # 손절가
+              stop_loss = round(price * 0.955, 2)
+
+              # 목표가
+              target1 = round(price * 1.08, 2)
+              target2 = round(price * 1.18, 2)
+
+              results.append({
+                  "symbol": symbol,
+                  "price": round(price, 2),
+                  "change": round(change, 2),
+                  "high": round(high, 2),
+                  "low": round(low, 2),
+                  "prevClose": round(prev_close, 2),
+
+                  "score": score,
+                  "moneyProbability": money_probability,
+                  "majorPlayerProbability": major_player,
+                  "pullback": pullback,
+
+                  "entryLow": entry_low,
+                  "entryHigh": entry_high,
+                  "stopLoss": stop_loss,
+                  "target1": target1,
+                  "target2": target2
+              })
+
+          # 돈 벌 가능성 높은 순으로 정렬
+          results.sort(
+              key=lambda x: (
+                  x["moneyProbability"],
+                  x["score"],
+                  x["change"]
+              ),
+              reverse=True
+          )
+
+          # 순위 부여 + 상위 10개
+          top10 = []
+
+          for i, stock in enumerate(results[:10], start=1):
+              stock["rank"] = i
+              top10.append(stock)
 
           output = {
               "updated": datetime.now(timezone.utc).isoformat(),
-              "mode": "LIVE",
-              "stocks": results
+              "mode": session,
+              "stocks": top10
           }
 
-          with open("data.json", "w") as f:
-              json.dump(output, f, indent=2)
+          with open("data.json", "w", encoding="utf-8") as f:
+              json.dump(
+                  output,
+                  f,
+                  ensure_ascii=False,
+                  indent=2
+              )
 
-          print(json.dumps(output, indent=2))
+          print(json.dumps(output, ensure_ascii=False, indent=2))
           PY
 
-      - name: Save data
+      - name: Commit updated data
         run: |
-          git config user.name "US Stock Scanner"
-          git config user.email "scanner@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           git add data.json
-          git commit -m "Update stock scanner data" || exit 0
-          git push
+
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "Update stock scanner data"
+            git push
+          fi
