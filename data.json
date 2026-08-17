@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-17T20:03:14.094613+00:00",
+  "updated": "2026-08-17T20:37:34.346546+00:00",
   "mode": "애프터장",
   "stocks": [
     {
@@ -112,8 +112,8 @@
     },
     {
       "symbol": "CLSK",
-      "price": 12.41,
-      "change": 2.65,
+      "price": 12.4,
+      "change": 2.56,
       "high": 12.54,
       "low": 11.93,
       "prevClose": 12.09,
@@ -121,11 +121,11 @@
       "moneyProbability": 15,
       "majorPlayerProbability": 10,
       "pullback": "높음",
-      "entryLow": 12.22,
-      "entryHigh": 12.47,
-      "stopLoss": 11.85,
-      "target1": 13.4,
-      "target2": 14.64,
+      "entryLow": 12.21,
+      "entryHigh": 12.46,
+      "stopLoss": 11.84,
+      "target1": 13.39,
+      "target2": 14.63,
       "rank": 7
     },
     {
