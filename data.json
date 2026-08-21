@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-21T20:09:24.160217+00:00",
+  "updated": "2026-08-21T20:39:00.029907+00:00",
   "mode": "애프터장",
   "stocks": [
     {
@@ -40,8 +40,8 @@
     },
     {
       "symbol": "QUBT",
-      "price": 8.91,
-      "change": 9.46,
+      "price": 8.92,
+      "change": 9.58,
       "high": 8.95,
       "low": 8.24,
       "prevClose": 8.14,
@@ -49,11 +49,11 @@
       "moneyProbability": 47,
       "majorPlayerProbability": 52,
       "pullback": "낮음",
-      "entryLow": 8.78,
-      "entryHigh": 8.95,
-      "stopLoss": 8.51,
-      "target1": 9.62,
-      "target2": 10.51,
+      "entryLow": 8.79,
+      "entryHigh": 8.96,
+      "stopLoss": 8.52,
+      "target1": 9.63,
+      "target2": 10.53,
       "rank": 3
     },
     {
