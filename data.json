@@ -1,11 +1,11 @@
 {
-  "updated": "2026-08-24T20:01:06.630873+00:00",
+  "updated": "2026-08-24T20:40:20.504520+00:00",
   "mode": "애프터장",
   "stocks": [
     {
       "symbol": "AMC",
       "price": 2.67,
-      "change": 4.9,
+      "change": 4.71,
       "high": 2.76,
       "low": 2.54,
       "prevClose": 2.55,
@@ -14,16 +14,16 @@
       "majorPlayerProbability": 15,
       "pullback": "높음",
       "entryLow": 2.63,
-      "entryHigh": 2.69,
+      "entryHigh": 2.68,
       "stopLoss": 2.55,
-      "target1": 2.89,
-      "target2": 3.16,
+      "target1": 2.88,
+      "target2": 3.15,
       "rank": 1
     },
     {
       "symbol": "BMNR",
-      "price": 24.15,
-      "change": 5.78,
+      "price": 24.14,
+      "change": 5.74,
       "high": 24.94,
       "low": 23.23,
       "prevClose": 22.83,
@@ -31,11 +31,11 @@
       "moneyProbability": 23,
       "majorPlayerProbability": 13,
       "pullback": "높음",
-      "entryLow": 23.79,
-      "entryHigh": 24.27,
-      "stopLoss": 23.06,
-      "target1": 26.08,
-      "target2": 28.5,
+      "entryLow": 23.78,
+      "entryHigh": 24.26,
+      "stopLoss": 23.05,
+      "target1": 26.07,
+      "target2": 28.49,
       "rank": 2
     },
     {
@@ -113,7 +113,7 @@
     {
       "symbol": "GME",
       "price": 18.04,
-      "change": -0.96,
+      "change": -0.93,
       "high": 18.35,
       "low": 17.93,
       "prevClose": 18.21,
@@ -121,11 +121,11 @@
       "moneyProbability": 0,
       "majorPlayerProbability": 10,
       "pullback": "낮음",
-      "entryLow": 17.76,
+      "entryLow": 17.77,
       "entryHigh": 18.13,
-      "stopLoss": 17.22,
+      "stopLoss": 17.23,
       "target1": 19.48,
-      "target2": 21.28,
+      "target2": 21.29,
       "rank": 7
     },
     {
@@ -166,8 +166,8 @@
     },
     {
       "symbol": "AI",
-      "price": 10.12,
-      "change": -1.75,
+      "price": 10.11,
+      "change": -1.84,
       "high": 10.34,
       "low": 10.02,
       "prevClose": 10.3,
@@ -175,11 +175,11 @@
       "moneyProbability": 0,
       "majorPlayerProbability": 10,
       "pullback": "낮음",
-      "entryLow": 9.97,
-      "entryHigh": 10.17,
+      "entryLow": 9.96,
+      "entryHigh": 10.16,
       "stopLoss": 9.66,
-      "target1": 10.93,
-      "target2": 11.94,
+      "target1": 10.92,
+      "target2": 11.93,
       "rank": 10
     }
   ]
