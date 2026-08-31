@@ -1,6 +1,6 @@
 {
-  "updated": "2026-08-31T05:48:57.384165+00:00",
-  "mode": "미국 시장 휴장",
+  "updated": "2026-08-31T11:52:55.834235+00:00",
+  "mode": "프리장",
   "stocks": [
     {
       "symbol": "AI",
@@ -21,42 +21,6 @@
       "rank": 1
     },
     {
-      "symbol": "PLTR",
-      "price": 186.29,
-      "change": 0.19,
-      "high": 188.37,
-      "low": 184.38,
-      "prevClose": 185.93,
-      "score": 15,
-      "moneyProbability": 15,
-      "majorPlayerProbability": 10,
-      "pullback": "높음",
-      "entryLow": 183.5,
-      "entryHigh": 187.22,
-      "stopLoss": 177.91,
-      "target1": 201.19,
-      "target2": 219.82,
-      "rank": 2
-    },
-    {
-      "symbol": "SOUN",
-      "price": 7.11,
-      "change": -1.52,
-      "high": 7.28,
-      "low": 7.02,
-      "prevClose": 7.22,
-      "score": 0,
-      "moneyProbability": 0,
-      "majorPlayerProbability": 10,
-      "pullback": "낮음",
-      "entryLow": 7.0,
-      "entryHigh": 7.15,
-      "stopLoss": 6.79,
-      "target1": 7.68,
-      "target2": 8.39,
-      "rank": 3
-    },
-    {
       "symbol": "GME",
       "price": 17.87,
       "change": -2.08,
@@ -72,7 +36,7 @@
       "stopLoss": 17.07,
       "target1": 19.3,
       "target2": 21.09,
-      "rank": 4
+      "rank": 2
     },
     {
       "symbol": "JOBY",
@@ -90,7 +54,7 @@
       "stopLoss": 6.67,
       "target1": 7.54,
       "target2": 8.24,
-      "rank": 5
+      "rank": 3
     },
     {
       "symbol": "OPEN",
@@ -108,25 +72,7 @@
       "stopLoss": 3.14,
       "target1": 3.55,
       "target2": 3.88,
-      "rank": 6
-    },
-    {
-      "symbol": "KULR",
-      "price": 2.58,
-      "change": -3.01,
-      "high": 2.69,
-      "low": 2.58,
-      "prevClose": 2.66,
-      "score": 0,
-      "moneyProbability": 0,
-      "majorPlayerProbability": 10,
-      "pullback": "낮음",
-      "entryLow": 2.54,
-      "entryHigh": 2.59,
-      "stopLoss": 2.46,
-      "target1": 2.79,
-      "target2": 3.04,
-      "rank": 7
+      "rank": 4
     },
     {
       "symbol": "ACHR",
@@ -144,7 +90,7 @@
       "stopLoss": 5.49,
       "target1": 6.21,
       "target2": 6.78,
-      "rank": 8
+      "rank": 5
     },
     {
       "symbol": "SMCI",
@@ -162,7 +108,7 @@
       "stopLoss": 35.41,
       "target1": 40.05,
       "target2": 43.75,
-      "rank": 9
+      "rank": 6
     },
     {
       "symbol": "AMC",
@@ -180,6 +126,60 @@
       "stopLoss": 2.47,
       "target1": 2.8,
       "target2": 3.06,
+      "rank": 7
+    },
+    {
+      "symbol": "NBIS",
+      "price": 209.18,
+      "change": -4.26,
+      "high": 214.28,
+      "low": 205.48,
+      "prevClose": 218.48,
+      "score": 0,
+      "moneyProbability": 0,
+      "majorPlayerProbability": 10,
+      "pullback": "낮음",
+      "entryLow": 206.04,
+      "entryHigh": 210.23,
+      "stopLoss": 199.77,
+      "target1": 225.91,
+      "target2": 246.83,
+      "rank": 8
+    },
+    {
+      "symbol": "BBAI",
+      "price": 3.05,
+      "change": -4.39,
+      "high": 3.22,
+      "low": 3.04,
+      "prevClose": 3.19,
+      "score": 0,
+      "moneyProbability": 0,
+      "majorPlayerProbability": 10,
+      "pullback": "낮음",
+      "entryLow": 3.0,
+      "entryHigh": 3.07,
+      "stopLoss": 2.91,
+      "target1": 3.29,
+      "target2": 3.6,
+      "rank": 9
+    },
+    {
+      "symbol": "RKLB",
+      "price": 64.39,
+      "change": -4.65,
+      "high": 66.75,
+      "low": 63.49,
+      "prevClose": 67.53,
+      "score": 0,
+      "moneyProbability": 0,
+      "majorPlayerProbability": 10,
+      "pullback": "낮음",
+      "entryLow": 63.42,
+      "entryHigh": 64.71,
+      "stopLoss": 61.49,
+      "target1": 69.54,
+      "target2": 75.98,
       "rank": 10
     }
   ]
